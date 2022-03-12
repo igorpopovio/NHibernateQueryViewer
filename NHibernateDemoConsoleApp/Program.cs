@@ -1,8 +1,10 @@
-﻿using System;
-using System.IO;
-using Examples.FirstProject.Entities;
+﻿using Examples.FirstProject.Entities;
+
 using FluentNHibernate.Cfg;
 using FluentNHibernate.Cfg.Db;
+
+using log4net.Config;
+
 using NHibernate;
 using NHibernate.Cfg;
 using NHibernate.Tool.hbm2ddl;
@@ -15,6 +17,8 @@ namespace Examples.FirstProject
 
         static void Main()
         {
+            XmlConfigurator.Configure();
+
             // create our NHibernate session factory
             var sessionFactory = CreateSessionFactory();
 
