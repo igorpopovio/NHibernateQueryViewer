@@ -11,6 +11,11 @@ using NHibernate.Tool.hbm2ddl;
 
 namespace Examples.FirstProject
 {
+    /// <summary>
+    /// Demo app that logs NHibernate queries to a file.
+    /// This program has been taken from:
+    /// https://github.com/nhibernate/fluent-nhibernate/blob/master/src/Examples.FirstProject/Program.cs
+    /// </summary>
     class Program
     {
         private const string DbFile = "firstProgram.db";
