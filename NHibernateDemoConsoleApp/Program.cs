@@ -112,7 +112,7 @@ namespace Examples.FirstProject
         {
             Console.WriteLine(store.Name);
             Console.WriteLine("  Products:");
-                        
+
             foreach (var product in store.Products)
             {
                 Console.WriteLine("    " + product.Name);
