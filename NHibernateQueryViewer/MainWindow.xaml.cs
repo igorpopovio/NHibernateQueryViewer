@@ -1,28 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using System.ComponentModel;
+using System.IO;
 
 namespace NHibernateQueryViewer
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
+        public MainViewModel? ViewModel => DataContext as MainViewModel;
+
         public MainWindow()
         {
             InitializeComponent();
+            ViewModel.PropertyChanged += LoadQueryOnSelectionChange;
+        }
+
+        private void LoadQueryOnSelectionChange(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != nameof(ViewModel.SelectedQuery)) return;
+            var stream = GenerateStreamFrom(ViewModel.SelectedQuery.WithParameters);
+            textEditor.Load(stream);
+        }
+
+        public Stream GenerateStreamFrom(string input)
+        {
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream);
+            writer.Write(input);
+            writer.Flush();
+            stream.Position = 0;
+            return stream;
         }
     }
 }
