@@ -3,6 +3,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 
 namespace NHibernateQueryViewer
 {
@@ -21,6 +22,11 @@ namespace NHibernateQueryViewer
                 var queryLog = args[1];
                 ReadQueryLog(queryLog);
             }
+        }
+
+        public void SetSelectionToFirstQuery()
+        {
+            SelectedQuery = Queries.First();
         }
 
         private void ReadQueryLog(string queryLog)

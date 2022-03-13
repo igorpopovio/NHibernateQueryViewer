@@ -14,6 +14,7 @@ namespace NHibernateQueryViewer
         {
             InitializeComponent();
             ViewModel.PropertyChanged += LoadQueryOnSelectionChange;
+            ViewModel.SetSelectionToFirstQuery();
         }
 
         private void LoadQueryOnSelectionChange(object? sender, PropertyChangedEventArgs e)
