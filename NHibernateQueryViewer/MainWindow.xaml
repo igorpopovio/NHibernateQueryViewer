@@ -4,9 +4,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:app="clr-namespace:NHibernateQueryViewer"
     xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
-    Title="MainWindow"
-    Width="800"
-    Height="450">
+    Title="NHibernate Query Viewer"
+    Width="1000"
+    Height="500">
     <Window.DataContext>
         <app:MainViewModel />
     </Window.DataContext>
