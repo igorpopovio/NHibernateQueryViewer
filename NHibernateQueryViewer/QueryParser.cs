@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Laan.Sql.Formatter;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,6 +20,13 @@ namespace NHibernateQueryViewer
         private static readonly Regex _queryParameterRegex = new Regex(
             @"(?<key>@p\d+)\s+=\s+(?<value>.+?)\s+\[",
             RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private FormattingEngine _formatter;
+
+        public QueryParser()
+        {
+            // TODO: inject dependencies
+            _formatter = new FormattingEngine();
+        }
 
         public QueryModel Parse(string line)
         {
@@ -35,6 +44,8 @@ namespace NHibernateQueryViewer
             foreach (var (key, value) in parameters.Reverse())
                 finalQuery = finalQuery.Replace(key, value);
             query.WithParameters = finalQuery.ToString();
+
+            query.WithParameters = _formatter.Execute(query.WithParameters);
 
             return query;
         }
