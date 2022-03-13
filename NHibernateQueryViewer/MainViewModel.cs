@@ -1,14 +1,19 @@
-﻿using NHibernateQueryViewer.Core;
+﻿using log4net;
+
+using NHibernateQueryViewer.Core;
 
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace NHibernateQueryViewer
 {
     public class MainViewModel : ViewModel
     {
+        private readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
+
         public ObservableCollection<QueryModel> Queries { get; set; }
         public QueryModel SelectedQuery { get; set; }
         public string Output { get; set; } = string.Empty;
@@ -35,8 +40,15 @@ namespace NHibernateQueryViewer
             var parser = new QueryParser();
             foreach (string line in File.ReadLines(queryLog))
             {
-                var query = parser.Parse(line);
-                Queries.Add(query);
+                try
+                {
+                    var query = parser.Parse(line);
+                    Queries.Add(query);
+                }
+                catch (Exception exception)
+                {
+                    Logger.Error($"Failed when parsing:\n\n{line}\n\n", exception);
+                }
             }
         }
     }
