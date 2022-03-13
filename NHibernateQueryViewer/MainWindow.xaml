@@ -10,18 +10,18 @@
         <app:MainViewModel />
     </Window.DataContext>
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition />
-        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <ListBox
+            DisplayMemberPath="Parameterized"
+            ItemsSource="{Binding Queries}"
+            SelectedItem="{Binding SelectedQuery}" />
         <TextBox
-            AcceptsReturn="True"
-            Text="{Binding Input, UpdateSourceTrigger=PropertyChanged}"
-            TextWrapping="Wrap" />
-        <TextBox
-            Grid.Row="1"
+            Grid.Column="1"
             IsReadOnly="True"
-            Text="{Binding Output}"
+            Text="{Binding SelectedQuery.WithParameters}"
             TextWrapping="Wrap" />
     </Grid>
 </Window>

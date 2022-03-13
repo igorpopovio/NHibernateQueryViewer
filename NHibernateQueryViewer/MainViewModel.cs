@@ -1,33 +1,36 @@
-﻿using System.ComponentModel;
-using System.Text;
+﻿using NHibernateQueryViewer.Core;
+
+using System;
+using System.Collections.ObjectModel;
+using System.IO;
 
 namespace NHibernateQueryViewer
 {
     public class MainViewModel : ViewModel
     {
-        public string Input { get; set; } = string.Empty;
+        public ObservableCollection<QueryModel> Queries { get; set; }
+        public QueryModel SelectedQuery { get; set; }
         public string Output { get; set; } = string.Empty;
 
         public MainViewModel()
         {
-            PropertyChanged += EmbedQueryParameters;
+            Queries = new ObservableCollection<QueryModel>();
+            var args = Environment.GetCommandLineArgs();
+            if (args.Length == 2)
+            {
+                var queryLog = args[1];
+                ReadQueryLog(queryLog);
+            }
         }
 
-        private void EmbedQueryParameters(object? sender, PropertyChangedEventArgs args)
+        private void ReadQueryLog(string queryLog)
         {
-            if (args.PropertyName != nameof(Input)) return;
-
-            try
+            // TODO: refactor code: use dependency injection
+            var parser = new QueryParser();
+            foreach (string line in File.ReadLines(queryLog))
             {
-                var query = new QueryParser().Parse(Input);
-                Output = query.WithParameters;
-            }
-            catch
-            {
-                var message = new StringBuilder();
-                message.AppendLine("Error. Please enter a query like the following:");
-                message.AppendLine("SELECT Id FROM Person WHERE Id = @p1;@p1 = 1 [Type: Int32 (0,0,0)];");
-                Output = message.ToString();
+                var query = parser.Parse(line);
+                Queries.Add(query);
             }
         }
     }

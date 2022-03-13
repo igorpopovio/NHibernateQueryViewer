@@ -25,8 +25,10 @@ namespace NHibernateQueryViewer
 
             var parts = line.Split(";\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
             query.DateTime = DateTime.ParseExact(parts.First(), DateFormat, null);
+            var queries = parts.Skip(1);
             var parameters = LoadParametersFrom(parts.Last());
-            var queries = parts.Skip(1).SkipLast(1);
+            if (parameters.Any())
+                queries = queries.SkipLast(1);
             query.Parameterized = string.Join(Environment.NewLine, queries.ToArray());
 
             var finalQuery = new StringBuilder(query.Parameterized);
