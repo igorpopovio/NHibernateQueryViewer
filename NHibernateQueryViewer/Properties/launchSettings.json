@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "NHibernateQueryViewer": {
-      "commandName": "Project",
-      "commandLineArgs": "\"C:\\Users\\igorp\\source\\repos\\NHibernateQueryViewer\\NHibernateDemoConsoleApp\\bin\\Debug\\net6.0\\Log\\sql.log\""
-    }
-  }
-}
