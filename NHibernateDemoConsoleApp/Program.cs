@@ -36,12 +36,12 @@ namespace Examples.FirstProject
                     var barginBasin = new Store { Name = "Bargin Basin" };
                     var superMart = new Store { Name = "SuperMart" };
 
-                    var potatoes = new Product { Name = "Potatoes", Price = 3.60 };
-                    var fish = new Product { Name = "Fish", Price = 4.49 };
-                    var milk = new Product { Name = "Milk", Price = 0.79 };
-                    var bread = new Product { Name = "Bread", Price = 1.29 };
-                    var cheese = new Product { Name = "Cheese", Price = 2.10 };
-                    var waffles = new Product { Name = "Waffles", Price = 2.41 };
+                    var potatoes = new Product { Name = "Potatoes", Price = 3.60, ExpiryDate = DateTime.Now.AddDays(10), };
+                    var fish = new Product { Name = "Fish", Price = 4.49, ExpiryDate = DateTime.Now.AddDays(11), };
+                    var milk = new Product { Name = "Milk", Price = 0.79, ExpiryDate = DateTime.Now.AddDays(12), };
+                    var bread = new Product { Name = "Bread", Price = 1.29, ExpiryDate = DateTime.Now.AddDays(13), };
+                    var cheese = new Product { Name = "Cheese", Price = 2.10, ExpiryDate = DateTime.Now.AddDays(14), };
+                    var waffles = new Product { Name = "Waffles", Price = 2.41, ExpiryDate = DateTime.Now.AddDays(15), };
 
                     var daisy = new Employee { FirstName = "Daisy", LastName = "Harrison" };
                     var jack = new Employee { FirstName = "Jack", LastName = "Torrance" };
