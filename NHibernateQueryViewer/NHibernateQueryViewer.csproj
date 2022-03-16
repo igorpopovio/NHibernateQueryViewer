@@ -23,9 +23,17 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Laan.Sql.Formatter" Version="0.3.1.70" />
     <PackageReference Include="log4net" Version="2.0.14" />
     <PackageReference Include="PropertyChanged.Fody" Version="3.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Laan.Sql.Formatter">
+      <HintPath>lib\Laan.Sql.Formatter.dll</HintPath>
+    </Reference>
+    <Reference Include="Laan.Sql.Parser">
+      <HintPath>lib\Laan.Sql.Parser.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
