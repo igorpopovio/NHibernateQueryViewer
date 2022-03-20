@@ -44,7 +44,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" MinWidth="300" />
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" MinWidth="500" />
+                <ColumnDefinition Width="3*" MinWidth="500" />
             </Grid.ColumnDefinitions>
 
             <ListBox
@@ -67,7 +67,6 @@
                 FontSize="12pt"
                 IsReadOnly="True"
                 ShowLineNumbers="True"
-                SyntaxHighlighting="TSQL"
                 WordWrap="True" />
         </Grid>
     </Grid>

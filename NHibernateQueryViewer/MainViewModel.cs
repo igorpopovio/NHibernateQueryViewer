@@ -49,7 +49,7 @@ namespace NHibernateQueryViewer
                 while (true)
                 {
                     var result = await client.ReceiveAsync();
-                    var loggingEvent = Encoding.Unicode.GetString(result.Buffer);
+                    var loggingEvent = Encoding.Unicode.GetString(result.Buffer).Trim();
 
                     var query = new QueryModel { RawQuery = loggingEvent };
 
@@ -84,10 +84,20 @@ namespace NHibernateQueryViewer
                     default:
                         throw new InvalidOperationException($"Unrecognized ViewOption: {ViewOption}");
                 }
+                SelectedQuery.Language = "TSQL";
             }
             catch (Exception exception)
             {
-                SelectedQuery.DisplayQuery = $"{exception.Message}{Environment.NewLine}{exception.StackTrace}";
+                var message = new StringBuilder();
+                message.AppendLine($"# Error");
+                message.AppendLine($"Occured when using the **{ViewOption}** view option.");
+                message.AppendLine();
+                message.AppendLine("## Raw query");
+                message.AppendLine(SelectedQuery.RawQuery);
+                message.AppendLine("## Exception");
+                message.AppendLine($"{exception.Message}{Environment.NewLine}{exception.StackTrace}");
+                SelectedQuery.DisplayQuery = message.ToString();
+                SelectedQuery.Language = "MarkDownWithFontSize";
             }
         }
 

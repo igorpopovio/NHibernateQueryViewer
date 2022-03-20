@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿using ICSharpCode.AvalonEdit.Highlighting;
+
+using System.ComponentModel;
 using System.IO;
 
 namespace NHibernateQueryViewer
@@ -24,6 +26,8 @@ namespace NHibernateQueryViewer
 
             var stream = GenerateStreamFrom(ViewModel.SelectedQuery.DisplayQuery);
             textEditor.Load(stream);
+            var syntax = HighlightingManager.Instance.GetDefinition(ViewModel.SelectedQuery.Language);
+            textEditor.SyntaxHighlighting = syntax;
         }
 
         public Stream GenerateStreamFrom(string input)
