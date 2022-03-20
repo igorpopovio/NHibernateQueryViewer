@@ -11,23 +11,55 @@
         <app:MainViewModel />
     </Window.DataContext>
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
-        <ListBox
-            DisplayMemberPath="Parameterized"
-            ItemsSource="{Binding Queries}"
-            SelectedItem="{Binding SelectedQuery}" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <StackPanel Margin="10" Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal">
+                <Button Content="Capture" />
+                <Button Content="Clear" />
+            </StackPanel>
 
-        <avalonEdit:TextEditor
-            x:Name="textEditor"
-            Grid.Column="1"
-            FontFamily="Consolas"
-            FontSize="12pt"
-            IsReadOnly="True"
-            ShowLineNumbers="True"
-            SyntaxHighlighting="TSQL"
-            WordWrap="True" />
+            <StackPanel Orientation="Vertical">
+                <Label Content="View options" />
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton Content="Raw" GroupName="options" />
+                    <RadioButton Content="Embed parameters" GroupName="options" />
+                    <RadioButton Content="Format" GroupName="options" />
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MinWidth="300" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" MinWidth="500" />
+            </Grid.ColumnDefinitions>
+
+            <ListBox
+                HorizontalAlignment="Stretch"
+                DisplayMemberPath="Parameterized"
+                ItemsSource="{Binding Queries}"
+                SelectedItem="{Binding SelectedQuery}" />
+
+            <GridSplitter
+                Grid.Column="1"
+                Width="5"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Stretch"
+                Background="LightSalmon" />
+
+            <avalonEdit:TextEditor
+                x:Name="textEditor"
+                Grid.Column="2"
+                FontFamily="Consolas"
+                FontSize="12pt"
+                IsReadOnly="True"
+                ShowLineNumbers="True"
+                SyntaxHighlighting="TSQL"
+                WordWrap="True" />
+        </Grid>
     </Grid>
 </Window>
