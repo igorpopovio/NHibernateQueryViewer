@@ -24,9 +24,18 @@
             <StackPanel Orientation="Vertical">
                 <Label Content="View options" />
                 <StackPanel Orientation="Horizontal">
-                    <RadioButton Content="Raw" GroupName="options" />
-                    <RadioButton Content="Embed parameters" GroupName="options" />
-                    <RadioButton Content="Format" GroupName="options" />
+                    <RadioButton
+                        Content="Raw"
+                        GroupName="options"
+                        IsChecked="{Binding ViewOption, Converter={app:ComparisonConverter}, ConverterParameter={x:Static app:ViewOption.Raw}}" />
+                    <RadioButton
+                        Content="Embed parameters"
+                        GroupName="options"
+                        IsChecked="{Binding ViewOption, Converter={app:ComparisonConverter}, ConverterParameter={x:Static app:ViewOption.EmbedParameters}}" />
+                    <RadioButton
+                        Content="Format"
+                        GroupName="options"
+                        IsChecked="{Binding ViewOption, Converter={app:ComparisonConverter}, ConverterParameter={x:Static app:ViewOption.Format}}" />
                 </StackPanel>
             </StackPanel>
         </StackPanel>

@@ -16,8 +16,10 @@ namespace NHibernateQueryViewer
     {
         private readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
 
-        public ObservableCollection<QueryModel> Queries { get; set; }
-        public QueryModel SelectedQuery { get; set; }
+        public ObservableCollection<QueryModel>? Queries { get; set; }
+        public QueryModel? SelectedQuery { get; set; }
+
+        public ViewOption ViewOption { get; set; } = ViewOption.Format;
 
         public MainViewModel()
         {
