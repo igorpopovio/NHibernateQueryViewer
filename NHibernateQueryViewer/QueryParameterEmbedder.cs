@@ -1,4 +1,4 @@
-﻿using Laan.Sql.Formatter;
+﻿using NHibernateQueryViewer.Core;
 
 using System;
 using System.Collections.Generic;
@@ -9,48 +9,27 @@ using System.Text.RegularExpressions;
 
 namespace NHibernateQueryViewer
 {
-    public interface IQueryParser
+    public class QueryParameterEmbedder : IQueryParameterEmbedder
     {
-        QueryModel Parse(string line);
-    }
-
-    public class QueryParser : IQueryParser
-    {
-        private const string DateFormat = "yyyy-MM-dd HH:mm:ss,fff";
-
-        private static readonly Regex _queryParameterRegex = new Regex(
+        private static readonly Regex _queryParameterRegex = new(
             @"(?<key>@p\d+)\s+=\s+(?<value>.+?)\s+\[Type:\s+(?<type>\w+)",
             RegexOptions.Compiled | RegexOptions.IgnoreCase);
-        private FormattingEngine _formatter;
 
-        public QueryParser()
+        public string Embed(string queryWithParameters)
         {
-            // TODO: inject dependencies
-            _formatter = new FormattingEngine();
-        }
-
-        public QueryModel Parse(string line)
-        {
-            var query = new QueryModel();
-
-            var parts = line.Split(";\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-            query.DateTime = DateTime.ParseExact(parts.First(), DateFormat, null);
-            var queries = parts.Skip(1);
-            var parameters = LoadParametersFrom(parts.Last());
+            var queries = queryWithParameters.Split(";\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).ToList();
+            var parameters = LoadParametersFrom(queries.Last());
             if (parameters.Any())
-                queries = queries.SkipLast(1);
-            query.Parameterized = string.Join(Environment.NewLine, queries.ToArray());
+                queries = queries.SkipLast(1).ToList();
+            var rawQuery = string.Join(Environment.NewLine, queries.ToArray());
 
-            var finalQuery = new StringBuilder(query.Parameterized);
+            var finalQuery = new StringBuilder(rawQuery);
 
             parameters.Reverse();
             foreach (var parameter in parameters)
                 finalQuery = finalQuery.Replace(parameter.Key, parameter.Value);
-            query.WithParameters = finalQuery.ToString();
 
-            query.WithParameters = _formatter.Execute(query.WithParameters);
-
-            return query;
+            return finalQuery.ToString();
         }
 
         private List<Parameter> LoadParametersFrom(string? input)

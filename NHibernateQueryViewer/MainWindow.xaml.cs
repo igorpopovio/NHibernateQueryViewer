@@ -13,14 +13,16 @@ namespace NHibernateQueryViewer
         public MainWindow()
         {
             InitializeComponent();
-            ViewModel.PropertyChanged += LoadQueryOnSelectionChange;
+            ViewModel.PropertyChanged += LoadQuery;
             ViewModel.SetSelectionToFirstQuery();
         }
 
-        private void LoadQueryOnSelectionChange(object? sender, PropertyChangedEventArgs e)
+        private void LoadQuery(object? sender, PropertyChangedEventArgs args)
         {
-            if (e.PropertyName != nameof(ViewModel.SelectedQuery)) return;
-            var stream = GenerateStreamFrom(ViewModel.SelectedQuery.WithParameters);
+            if (args.PropertyName != nameof(ViewModel.SelectedQuery) && args.PropertyName != nameof(ViewModel.ViewOption)) return;
+            if (ViewModel?.SelectedQuery?.DisplayQuery == null) return;
+
+            var stream = GenerateStreamFrom(ViewModel.SelectedQuery.DisplayQuery);
             textEditor.Load(stream);
         }
 

@@ -49,7 +49,7 @@
 
             <ListBox
                 HorizontalAlignment="Stretch"
-                DisplayMemberPath="Parameterized"
+                DisplayMemberPath="ShortForm"
                 ItemsSource="{Binding Queries}"
                 SelectedItem="{Binding SelectedQuery}" />
 
