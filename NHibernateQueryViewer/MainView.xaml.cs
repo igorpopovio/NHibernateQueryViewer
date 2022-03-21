@@ -2,19 +2,27 @@
 
 using System.ComponentModel;
 using System.IO;
+using System.Windows;
 
 namespace NHibernateQueryViewer
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for MainView.xaml
     /// </summary>
-    public partial class MainWindow
+    public partial class MainView
     {
         public MainViewModel? ViewModel => DataContext as MainViewModel;
 
-        public MainWindow()
+        public MainView()
         {
             InitializeComponent();
+            Loaded += MainView_Loaded;
+        }
+
+        private void MainView_Loaded(object sender, RoutedEventArgs args)
+        {
+            if (ViewModel == null) return;
+
             ViewModel.PropertyChanged += LoadQuery;
             ViewModel.SetSelectionToFirstQuery();
         }

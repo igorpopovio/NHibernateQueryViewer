@@ -16,20 +16,22 @@ namespace NHibernateQueryViewer
     public class MainViewModel : ViewModel
     {
         private readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
-        private LaanQueryFormatter _formatter;
-        private QueryParameterEmbedder _parameterEmbedder;
+
+        private IQueryFormatter _queryFormatter;
+        private IQueryParameterEmbedder _queryParameterEmbedder;
 
         public ObservableCollection<QueryModel> Queries { get; set; }
         public QueryModel? SelectedQuery { get; set; }
 
-        public ViewOption ViewOption { get; set; } = ViewOption.Format;
+        public ViewOption ViewOption { get; set; }
 
-        public MainViewModel()
+        public MainViewModel(IQueryFormatter queryFormatter, IQueryParameterEmbedder queryParameterEmbedder)
         {
-            // TODO: use dependency injection
-            _formatter = new LaanQueryFormatter();
-            _parameterEmbedder = new QueryParameterEmbedder();
+            _queryFormatter = queryFormatter;
+            _queryParameterEmbedder = queryParameterEmbedder;
+
             Queries = new ObservableCollection<QueryModel>();
+            ViewOption = ViewOption.Format;
 
             PropertyChanged += UpdateViewOptionForSelectedQuery;
 
@@ -75,11 +77,11 @@ namespace NHibernateQueryViewer
                         SelectedQuery.DisplayQuery = SelectedQuery.RawQuery;
                         break;
                     case ViewOption.EmbedParameters:
-                        SelectedQuery.DisplayQuery = _parameterEmbedder.Embed(SelectedQuery.RawQuery);
+                        SelectedQuery.DisplayQuery = _queryParameterEmbedder.Embed(SelectedQuery.RawQuery);
                         break;
                     case ViewOption.Format:
-                        var query = _parameterEmbedder.Embed(SelectedQuery.RawQuery);
-                        SelectedQuery.DisplayQuery = _formatter.Format(query);
+                        var query = _queryParameterEmbedder.Embed(SelectedQuery.RawQuery);
+                        SelectedQuery.DisplayQuery = _queryFormatter.Format(query);
                         break;
                     default:
                         throw new InvalidOperationException($"Unrecognized ViewOption: {ViewOption}");
