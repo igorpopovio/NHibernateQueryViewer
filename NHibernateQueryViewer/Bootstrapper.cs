@@ -14,6 +14,7 @@ namespace NHibernateQueryViewer
 
             builder.Bind<IQueryFormatter>().To<LaanQueryFormatter>().InSingletonScope();
             builder.Bind<IQueryParameterEmbedder>().To<QueryParameterEmbedder>().InSingletonScope();
+            builder.Bind<IQueryConnection>().To<QueryConnection>();
         }
     }
 }

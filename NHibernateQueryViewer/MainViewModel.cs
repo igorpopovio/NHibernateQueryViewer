@@ -6,7 +6,6 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,48 +18,60 @@ namespace NHibernateQueryViewer
 
         private IQueryFormatter _queryFormatter;
         private IQueryParameterEmbedder _queryParameterEmbedder;
+        private IQueryConnection? _queryConnection;
+        private readonly Func<IQueryConnection> _queryConnectionFactory;
 
         public ObservableCollection<QueryModel> Queries { get; set; }
         public QueryModel? SelectedQuery { get; set; }
 
+        public bool IsCapturing { get; set; }
         public ViewOption ViewOption { get; set; }
 
-        public MainViewModel(IQueryFormatter queryFormatter, IQueryParameterEmbedder queryParameterEmbedder)
+        public MainViewModel(
+            IQueryFormatter queryFormatter,
+            IQueryParameterEmbedder queryParameterEmbedder,
+            Func<IQueryConnection> queryConnectionFactory)
         {
             _queryFormatter = queryFormatter;
             _queryParameterEmbedder = queryParameterEmbedder;
+            _queryConnectionFactory = queryConnectionFactory;
 
             Queries = new ObservableCollection<QueryModel>();
             ViewOption = ViewOption.Format;
 
             PropertyChanged += UpdateViewOptionForSelectedQuery;
-
-            ListenToConnections();
+            PropertyChanged += HandleConnections;
         }
 
-        private async Task ListenToConnections()
+        private void HandleConnections(object? sender, PropertyChangedEventArgs args)
         {
-            await ListenToUdpConnectionsOn(port: 61234);
+            if (args.PropertyName != nameof(IsCapturing)) return;
+
+            if (IsCapturing)
+            {
+                _queryConnection = _queryConnectionFactory();
+            }
+            else
+            {
+                (_queryConnection as IDisposable)?.Dispose();
+                _queryConnection = null;
+            }
         }
 
-        private async Task ListenToUdpConnectionsOn(int port)
+        public async Task Capture()
         {
             try
             {
-                var client = new UdpClient(port);
-                while (true)
+                while (IsCapturing && _queryConnection != null)
                 {
-                    var result = await client.ReceiveAsync();
-                    var loggingEvent = Encoding.Unicode.GetString(result.Buffer).Trim();
-
-                    var query = new QueryModel { RawQuery = loggingEvent };
-
+                    var query = await _queryConnection.ReceiveQueryAsync();
                     Queries.Add(query);
                 }
             }
-            catch (Exception exception)
+            catch (ConnectionAbortedException)
             {
-                Logger.Error(exception);
+                // after closing the connection we still have a pending ReceiveQueryAsync
+                // call which is no longer relevant so we can just ignore it
             }
         }
 

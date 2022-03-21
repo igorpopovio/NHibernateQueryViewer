@@ -1,0 +1,70 @@
+﻿using NHibernateQueryViewer.Core;
+
+using System;
+using System.Collections.Generic;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace NHibernateQueryViewer
+{
+    public class QueryConnection : IQueryConnection, IDisposable
+    {
+        public const int DefaultPort = 61234;
+        private UdpClient _udpClient;
+        private bool _disposed;
+
+        private ISet<SocketError> _abortedErrorCodes = new HashSet<SocketError>()
+        {
+            SocketError.OperationAborted,
+            SocketError.ConnectionAborted,
+        };
+
+        public QueryConnection()
+            : this(new UdpClient(DefaultPort)) { }
+
+        public QueryConnection(UdpClient udpClient)
+        {
+            _udpClient = udpClient;
+        }
+
+        public async Task<QueryModel> ReceiveQueryAsync()
+        {
+            if (_disposed) throw new ObjectDisposedException(nameof(QueryConnection));
+
+            try
+            {
+                var result = await _udpClient.ReceiveAsync();
+                var loggingEvent = Encoding.Unicode.GetString(result.Buffer).Trim();
+                return new QueryModel { RawQuery = loggingEvent };
+            }
+            catch (SocketException exception)
+            {
+                if (_abortedErrorCodes.Contains(exception.SocketErrorCode))
+                    throw new ConnectionAbortedException("Connection was aborted", exception);
+                else
+                    throw new ConnectionException("Unknown connection error", exception);
+            }
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    _udpClient.Close();
+                    _udpClient.Dispose();
+                }
+
+                _disposed = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+    }
+}

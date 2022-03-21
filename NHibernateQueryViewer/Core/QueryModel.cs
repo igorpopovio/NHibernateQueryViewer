@@ -1,6 +1,4 @@
-﻿using NHibernateQueryViewer.Core;
-
-namespace NHibernateQueryViewer
+﻿namespace NHibernateQueryViewer.Core
 {
     public class QueryModel : ObservableObject
     {

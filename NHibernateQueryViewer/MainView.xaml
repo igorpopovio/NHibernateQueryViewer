@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:app="clr-namespace:NHibernateQueryViewer"
     xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
+    xmlns:s="https://github.com/canton7/Stylet"
     Title="NHibernate Query Viewer"
     Width="1000"
     Height="500">
@@ -14,7 +15,10 @@
         </Grid.RowDefinitions>
         <StackPanel Margin="10" Orientation="Horizontal">
             <StackPanel Orientation="Horizontal">
-                <Button Content="Capture" />
+                <ToggleButton
+                    Command="{s:Action Capture}"
+                    Content="Capture"
+                    IsChecked="{Binding IsCapturing}" />
                 <Button Content="Clear" />
             </StackPanel>
 
