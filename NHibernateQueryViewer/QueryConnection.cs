@@ -55,7 +55,6 @@ namespace NHibernateQueryViewer
             {
                 if (disposing)
                 {
-                    _udpClient.Close();
                     _udpClient.Dispose();
                 }
 
