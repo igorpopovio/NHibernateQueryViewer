@@ -108,10 +108,5 @@ namespace NHibernateQueryViewer
                 SelectedQuery.Language = "MarkDownWithFontSize";
             }
         }
-
-        public void SelectFirstQuery()
-        {
-            SelectedQuery = Queries?.FirstOrDefault();
-        }
     }
 }
