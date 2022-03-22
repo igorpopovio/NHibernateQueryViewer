@@ -19,6 +19,7 @@ namespace NHibernateQueryViewer
         public QueryModel? SelectedQuery { get; set; }
 
         public bool IsCapturing { get; set; }
+        public string CaptureButtonName { get; set; }
         public ViewOption ViewOption { get; set; }
 
         public MainViewModel(
@@ -32,6 +33,7 @@ namespace NHibernateQueryViewer
 
             Queries = new ObservableCollection<QueryModel>();
             ViewOption = ViewOption.Format;
+            CaptureButtonName = "Capture";
 
             PropertyChanged += UpdateViewOptionForSelectedQuery;
             PropertyChanged += HandleConnections;
@@ -44,11 +46,13 @@ namespace NHibernateQueryViewer
             if (IsCapturing)
             {
                 _queryConnection = _queryConnectionFactory();
+                CaptureButtonName = "Capturing";
             }
             else
             {
                 (_queryConnection as IDisposable)?.Dispose();
                 _queryConnection = null;
+                CaptureButtonName = "Capture";
             }
         }
 

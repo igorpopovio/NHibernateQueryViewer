@@ -17,7 +17,7 @@
             <StackPanel Orientation="Horizontal">
                 <ToggleButton
                     Command="{s:Action Capture}"
-                    Content="Capture"
+                    Content="{Binding CaptureButtonName}"
                     IsChecked="{Binding IsCapturing}" />
                 <Button Command="{s:Action Clear}" Content="Clear" />
             </StackPanel>
