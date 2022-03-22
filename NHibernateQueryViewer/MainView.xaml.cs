@@ -29,7 +29,11 @@ namespace NHibernateQueryViewer
         private void LoadQuery(object? sender, PropertyChangedEventArgs args)
         {
             if (args.PropertyName != nameof(ViewModel.SelectedQuery) && args.PropertyName != nameof(ViewModel.ViewOption)) return;
-            if (ViewModel?.SelectedQuery?.DisplayQuery == null) return;
+            if (ViewModel?.SelectedQuery?.DisplayQuery == null)
+            {
+                textEditor.Text = null;
+                return;
+            }
 
             var stream = GenerateStreamFrom(ViewModel.SelectedQuery.DisplayQuery);
             textEditor.Load(stream);

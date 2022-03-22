@@ -76,6 +76,7 @@ namespace NHibernateQueryViewer
         public void Clear()
         {
             Queries.Clear();
+            SelectedQuery = null;
         }
 
         private void UpdateViewOptionForSelectedQuery(object? sender, PropertyChangedEventArgs args)
