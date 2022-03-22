@@ -37,7 +37,7 @@ namespace NHibernateQueryViewer
                 // TODO: call ReceiveAsync(CancellationToken cancellationToken)
                 // and implement proper cancellation instead of checking error codes
                 var result = await _udpClient.ReceiveAsync();
-                var loggingEvent = Encoding.Unicode.GetString(result.Buffer).Trim();
+                var loggingEvent = Encoding.Default.GetString(result.Buffer).Trim();
                 return new QueryModel { RawQuery = loggingEvent };
             }
             catch (SocketException exception)
