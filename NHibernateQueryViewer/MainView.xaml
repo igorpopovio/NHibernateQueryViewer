@@ -19,7 +19,7 @@
                     Command="{s:Action Capture}"
                     Content="Capture"
                     IsChecked="{Binding IsCapturing}" />
-                <Button Content="Clear" />
+                <Button Command="{s:Action Clear}" Content="Clear" />
             </StackPanel>
 
             <StackPanel Orientation="Vertical">

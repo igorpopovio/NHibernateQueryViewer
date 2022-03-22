@@ -3,7 +3,6 @@
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -68,6 +67,11 @@ namespace NHibernateQueryViewer
                 // after closing the connection we still have a pending ReceiveQueryAsync
                 // call which is no longer relevant so we can just ignore it
             }
+        }
+
+        public void Clear()
+        {
+            Queries.Clear();
         }
 
         private void UpdateViewOptionForSelectedQuery(object? sender, PropertyChangedEventArgs args)
