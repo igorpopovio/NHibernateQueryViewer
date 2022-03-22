@@ -1,12 +1,9 @@
-﻿using log4net;
-
-using NHibernateQueryViewer.Core;
+﻿using NHibernateQueryViewer.Core;
 
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,8 +11,6 @@ namespace NHibernateQueryViewer
 {
     public class MainViewModel : ViewModel
     {
-        private readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
-
         private IQueryFormatter _queryFormatter;
         private IQueryParameterEmbedder _queryParameterEmbedder;
         private IQueryConnection? _queryConnection;
