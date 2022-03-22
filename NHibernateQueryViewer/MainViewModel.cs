@@ -114,7 +114,7 @@ namespace NHibernateQueryViewer
             }
         }
 
-        public void SetSelectionToFirstQuery()
+        public void SelectFirstQuery()
         {
             SelectedQuery = Queries?.FirstOrDefault();
         }

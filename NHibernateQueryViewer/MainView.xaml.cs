@@ -24,7 +24,7 @@ namespace NHibernateQueryViewer
             if (ViewModel == null) return;
 
             ViewModel.PropertyChanged += LoadQuery;
-            ViewModel.SetSelectionToFirstQuery();
+            ViewModel.SelectFirstQuery();
         }
 
         private void LoadQuery(object? sender, PropertyChangedEventArgs args)
