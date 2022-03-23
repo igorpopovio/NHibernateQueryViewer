@@ -35,5 +35,31 @@ namespace Tests
 
             Assert.That(query, Is.EqualTo("SELECT this_.Id as y0_ FROM Person this_ WHERE Id IN (1, 2)"));
         }
+
+        [Test]
+        public void EmbedsDateTimeParameters()
+        {
+            var parser = new QueryParameterEmbedder();
+            var sb = new StringBuilder();
+            sb.Append("INSERT INTO Admin_ErrorLog (RecordDateTime) VALUES (@p0);");
+            sb.Append("@p0 = 2022-03-24T18:37:42.9553368+02:00 [Type: DateTime (10:0:0)]");
+
+            var query = parser.Embed(sb.ToString());
+
+            Assert.That(query, Is.EqualTo("INSERT INTO Admin_ErrorLog (RecordDateTime) VALUES ('2022-03-24 18:37:42.955')"));
+        }
+
+        [Test]
+        public void EmbedsDateTimeOffsetParameters()
+        {
+            var parser = new QueryParameterEmbedder();
+            var sb = new StringBuilder();
+            sb.Append("INSERT INTO Admin_ErrorLog (RecordDateTime) VALUES (@p0);");
+            sb.Append("@p0 = 2022-03-23T17:30:00.0798130+00:00 [Type: DateTimeOffset (10:0:0)]");
+
+            var query = parser.Embed(sb.ToString());
+
+            Assert.That(query, Is.EqualTo("INSERT INTO Admin_ErrorLog (RecordDateTime) VALUES ('2022-03-23 17:30:00.0798130 +00:00')"));
+        }
     }
 }
