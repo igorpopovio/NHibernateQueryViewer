@@ -57,6 +57,8 @@ namespace NHibernateQueryViewer
 
         private void HandleSpecialCases(Parameter parameter)
         {
+            if (parameter.Value.ToUpper() == "NULL") return;
+
             if (parameter.Type == typeof(DateTime))
             {
                 // NHibernate datetime: 2022-03-24T18:37:42.9553368+02:00

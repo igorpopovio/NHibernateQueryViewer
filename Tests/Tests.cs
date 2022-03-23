@@ -61,5 +61,18 @@ namespace Tests
 
             Assert.That(query, Is.EqualTo("INSERT INTO Admin_ErrorLog (RecordDateTime) VALUES ('2022-03-23 17:30:00.0798130 +00:00')"));
         }
+
+        [Test]
+        public void EmbedsNullParameters()
+        {
+            var parser = new QueryParameterEmbedder();
+            var sb = new StringBuilder();
+            sb.Append("INSERT INTO Admin_Session (RecordDateTime) VALUES (@p0);");
+            sb.Append("@p0 = NULL [Type: DateTimeOffset (10:0:0)]");
+
+            var query = parser.Embed(sb.ToString());
+
+            Assert.That(query, Is.EqualTo("INSERT INTO Admin_Session (RecordDateTime) VALUES (NULL)"));
+        }
     }
 }
