@@ -57,7 +57,7 @@ namespace NHibernateQueryViewer
 
         private void HandleSpecialCases(Parameter parameter)
         {
-            if (parameter.Type == typeof(DateTime))
+            if (parameter.IsDate)
             {
                 // NHibernate datetime: 2022-03-24T18:37:42.9553368+02:00
                 // SQL Server datetime: 2022-03-14 16:09:07.043
@@ -72,6 +72,12 @@ namespace NHibernateQueryViewer
     {
         public string Key { get; set; } = string.Empty;
         public string Value { get; set; } = string.Empty;
-        public Type Type { get; set; }
+        public Type? Type { get; set; }
+
+        public bool IsDate =>
+            Type == typeof(DateTime) ||
+            Type == typeof(DateTimeOffset);
+
+        public bool IsBoolean => Type == typeof(bool);
     }
 }
