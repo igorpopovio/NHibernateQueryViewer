@@ -59,6 +59,11 @@ namespace NHibernateQueryViewer
         {
             if (parameter.Value.ToUpper() == "NULL") return;
 
+            if (parameter.Type == typeof(Boolean))
+            {
+                parameter.Value = Boolean.Parse(parameter.Value) ? "1" : "0";
+            }
+
             if (parameter.Type == typeof(DateTime))
             {
                 // NHibernate datetime: 2022-03-24T18:37:42.9553368+02:00

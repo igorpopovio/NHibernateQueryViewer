@@ -74,5 +74,19 @@ namespace Tests
 
             Assert.That(query, Is.EqualTo("INSERT INTO Admin_Session (RecordDateTime) VALUES (NULL)"));
         }
+
+        [Test]
+        public void EmbedsBooleanParameters()
+        {
+            var parser = new QueryParameterEmbedder();
+            var sb = new StringBuilder();
+            sb.Append("INSERT INTO Users (IsSystem, IsDefault) VALUES (@p0, @p1);");
+            sb.Append("@p0 = True [Type: Boolean (0:0:0)]");
+            sb.Append("@p1 = False [Type: Boolean (0:0:0)]");
+
+            var query = parser.Embed(sb.ToString());
+
+            Assert.That(query, Is.EqualTo("INSERT INTO Users (IsSystem, IsDefault) VALUES (1, 0)"));
+        }
     }
 }
