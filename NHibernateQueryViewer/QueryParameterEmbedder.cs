@@ -34,10 +34,9 @@ namespace NHibernateQueryViewer
         public string Embed(string queryWithParameters)
         {
             var indexOfQuery = queryWithParameters.IndexOf(";@");
-            var rawQuery = queryWithParameters[..indexOfQuery];
-            var rawParameters = queryWithParameters[indexOfQuery..];
+            var rawQuery = indexOfQuery == -1 ? queryWithParameters : queryWithParameters[..indexOfQuery];
+            var rawParameters = indexOfQuery == -1 ? "" : queryWithParameters[indexOfQuery..];
             var parameters = LoadParametersFrom(rawParameters);
-
             var finalQuery = new StringBuilder(rawQuery);
 
             parameters.Reverse();
