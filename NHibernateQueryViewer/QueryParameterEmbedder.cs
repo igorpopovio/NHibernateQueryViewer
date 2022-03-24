@@ -13,7 +13,7 @@ namespace NHibernateQueryViewer
     public class QueryParameterEmbedder : IQueryParameterEmbedder
     {
         private static readonly Regex _queryParameterRegex = new(
-            @"(?<name>[@:]\w+)\s+=\s+(?<value>.+?)\s+\[Type:\s+(?<type>\w+)\s+\((?<size>\w+):(?<scale>\w+):(?<precision>\w+)\)\]",
+            @"(?<name>[@:]\w+)\s+=\s+(?<value>(.|\n|\r)+?)\s+\[Type:\s+(?<type>\w+)\s+\((?<size>\w+):(?<scale>\w+):(?<precision>\w+)\)\]",
             RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         // parameter name uses a "name prefix":
