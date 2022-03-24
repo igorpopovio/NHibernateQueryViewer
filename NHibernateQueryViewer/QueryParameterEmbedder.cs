@@ -13,7 +13,7 @@ namespace NHibernateQueryViewer
     public class QueryParameterEmbedder : IQueryParameterEmbedder
     {
         private static readonly Regex _queryParameterRegex = new(
-            @"(?<key>@p\d+)\s+=\s+(?<value>.+?)\s+\[Type:\s+(?<type>\w+)",
+            @"(?<name>[@:]\w+)\s+=\s+(?<value>.+?)\s+\[Type:\s+(?<type>\w+)\s+\((?<size>\w+):(?<scale>\w+):(?<precision>\w+)\)\]",
             RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         // parameter name uses a "name prefix":
@@ -43,35 +43,43 @@ namespace NHibernateQueryViewer
 
             parameters.Reverse();
             foreach (var parameter in parameters)
-                finalQuery = finalQuery.Replace(parameter.Key, parameter.Value);
+                finalQuery = finalQuery.Replace(parameter.Name, parameter.Value);
 
             return finalQuery.ToString();
         }
 
         private List<Parameter> LoadParametersFrom(string? input)
         {
+            if (string.IsNullOrWhiteSpace(input))
+                return new List<Parameter>();
+
             var parameters = new List<Parameter>();
             var matches = _queryParameterRegex.Matches(input);
 
             foreach (Match match in matches)
             {
                 var groups = match.Groups;
-
-                var parameter = new Parameter();
-                var type = groups["type"].Value;
-                parameter.Type = (DbType)Enum.Parse(typeof(DbType), type);
-                parameter.Key = groups["key"].Value;
-                parameter.Value = groups["value"].Value;
-
-                HandleSpecialCases(parameter);
-
+                var parameter = ExtractParameterFrom(groups);
+                ConvertValuesFromDotNetToSqlServer(parameter);
                 parameters.Add(parameter);
             }
 
             return parameters;
         }
 
-        private void HandleSpecialCases(Parameter parameter)
+        private Parameter ExtractParameterFrom(GroupCollection groups)
+        {
+            var parameter = new Parameter();
+            parameter.Name = groups["name"].Value;
+            parameter.Type = (DbType)Enum.Parse(typeof(DbType), groups["type"].Value);
+            parameter.Value = groups["value"].Value;
+            parameter.Size = int.Parse(groups["size"].Value);
+            parameter.Scale = byte.Parse(groups["scale"].Value);
+            parameter.Precision = byte.Parse(groups["precision"].Value);
+            return parameter;
+        }
+
+        private void ConvertValuesFromDotNetToSqlServer(Parameter parameter)
         {
             if (parameter.Value.ToUpper() == "NULL") return;
 
@@ -101,17 +109,15 @@ namespace NHibernateQueryViewer
         }
     }
 
-    // TODO: could use DbParameter or SqlParameter or just trimmed down version below
     internal class Parameter
     {
-        public string Key { get; set; } = string.Empty;
+        // original code uses DbParameter/SqlParameter,
+        // but we can use a simplified version here
+        public string Name { get; set; } = string.Empty;
         public string Value { get; set; } = string.Empty;
         public DbType Type { get; set; }
-        // DbType/DbType
-        // Size/int
-        // Scale/byte
-        // Precision/byte
-        // ParameterName/string
-        // Value/object/string
+        public int Size { get; set; }
+        public byte Scale { get; set; }
+        public byte Precision { get; set; }
     }
 }
