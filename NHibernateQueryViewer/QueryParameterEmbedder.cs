@@ -82,6 +82,7 @@ namespace NHibernateQueryViewer
         private void ConvertValuesFromDotNetToSqlServer(Parameter parameter)
         {
             if (parameter.Value.ToUpper() == "NULL") return;
+            if (parameter.Value.First() == '\'' && parameter.Value.Last() == '\'') return;
             if (decimal.TryParse(parameter.Value, out _)) return;
 
             switch (parameter.Type)
