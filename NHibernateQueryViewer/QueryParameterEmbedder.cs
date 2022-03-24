@@ -16,10 +16,20 @@ namespace NHibernateQueryViewer
             @"(?<key>@p\d+)\s+=\s+(?<value>.+?)\s+\[Type:\s+(?<type>\w+)",
             RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-        // [Type: DateTime (10:0:0)]
-        // [Type: DbType (Scale:Precision:Size)]
-        // source:
-        // https://docs.microsoft.com/en-us/dotnet/api/system.data.common.dbparameter?view=net-6.0
+        // parameter name uses a "name prefix":
+        // Sql Server uses "@" and Oracle uses ":"
+
+        /*
+        example: [Type: DateTime (10:0:0)]
+        meaning: [Type: DbType (Size:Scale:Precision)]
+        source: SqlStatementLogger.GetParameterLoggableType(DbParameter dataParameter)
+        link: https://github.com/nhibernate/nhibernate-core/blob/master/src/NHibernate/AdoNet/Util/SqlStatementLogger.cs
+        code:
+        private static string GetParameterLoggableType(DbParameter dataParameter)
+        {
+            return dataParameter.DbType + " (" + dataParameter.Size + ":" + dataParameter.Scale + ":" + dataParameter.Precision + ")";
+        }
+         */
 
         public string Embed(string queryWithParameters)
         {
@@ -91,12 +101,17 @@ namespace NHibernateQueryViewer
         }
     }
 
-    // TODO: could use
-    // https://docs.microsoft.com/en-us/dotnet/api/system.data.sqlclient.sqlparameter
+    // TODO: could use DbParameter or SqlParameter or just trimmed down version below
     internal class Parameter
     {
         public string Key { get; set; } = string.Empty;
         public string Value { get; set; } = string.Empty;
         public DbType Type { get; set; }
+        // DbType/DbType
+        // Size/int
+        // Scale/byte
+        // Precision/byte
+        // ParameterName/string
+        // Value/object/string
     }
 }
