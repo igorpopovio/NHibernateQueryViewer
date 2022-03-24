@@ -33,11 +33,10 @@ namespace NHibernateQueryViewer
 
         public string Embed(string queryWithParameters)
         {
-            var queries = queryWithParameters.Split(";\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).ToList();
-            var parameters = LoadParametersFrom(queries.Last());
-            if (parameters.Any())
-                queries = queries.SkipLast(1).ToList();
-            var rawQuery = string.Join(Environment.NewLine, queries.ToArray());
+            var indexOfQuery = queryWithParameters.IndexOf(";@");
+            var rawQuery = queryWithParameters[..indexOfQuery];
+            var rawParameters = queryWithParameters[indexOfQuery..];
+            var parameters = LoadParametersFrom(rawParameters);
 
             var finalQuery = new StringBuilder(rawQuery);
 
