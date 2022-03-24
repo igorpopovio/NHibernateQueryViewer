@@ -36,13 +36,14 @@ namespace Tests
             Assert.That(query, Is.EqualTo("SELECT this_.Id as y0_ FROM Person this_ WHERE Id IN (1, 2)"));
         }
 
-        [Test]
-        public void EmbedsDateTimeParameters()
+        [TestCase("DateTime")]
+        [TestCase("DateTime2")]
+        public void EmbedsDateTimeParameters(string dateTimeType)
         {
             var parser = new QueryParameterEmbedder();
             var sb = new StringBuilder();
             sb.Append("INSERT INTO Admin_ErrorLog (RecordDateTime) VALUES (@p0);");
-            sb.Append("@p0 = 2022-03-24T18:37:42.9553368+02:00 [Type: DateTime (10:0:0)]");
+            sb.Append($"@p0 = 2022-03-24T18:37:42.9553368+02:00 [Type: {dateTimeType} (10:0:0)]");
 
             var query = parser.Embed(sb.ToString());
 

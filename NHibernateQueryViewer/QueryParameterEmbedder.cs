@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,11 @@ namespace NHibernateQueryViewer
         private static readonly Regex _queryParameterRegex = new(
             @"(?<key>@p\d+)\s+=\s+(?<value>.+?)\s+\[Type:\s+(?<type>\w+)",
             RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+        // [Type: DateTime (10:0:0)]
+        // [Type: DbType (Scale:Precision:Size)]
+        // source:
+        // https://docs.microsoft.com/en-us/dotnet/api/system.data.common.dbparameter?view=net-6.0
 
         public string Embed(string queryWithParameters)
         {
@@ -43,7 +49,7 @@ namespace NHibernateQueryViewer
 
                 var parameter = new Parameter();
                 var type = groups["type"].Value;
-                parameter.Type = Type.GetType($"System.{type}"); // TODO: hack, fix later
+                parameter.Type = (DbType)Enum.Parse(typeof(DbType), type);
                 parameter.Key = groups["key"].Value;
                 parameter.Value = groups["value"].Value;
 
@@ -59,29 +65,25 @@ namespace NHibernateQueryViewer
         {
             if (parameter.Value.ToUpper() == "NULL") return;
 
-            if (parameter.Type == typeof(Boolean))
+            if (parameter.Type == DbType.Boolean)
             {
-                parameter.Value = Boolean.Parse(parameter.Value) ? "1" : "0";
+                parameter.Value = bool.Parse(parameter.Value) ? "1" : "0";
             }
 
-            if (parameter.Type == typeof(Guid))
+            if (parameter.Type == DbType.Guid)
             {
                 parameter.Value = $"'{parameter.Value}'";
             }
 
-            if (parameter.Type == typeof(DateTime))
+            if (parameter.Type == DbType.DateTime || parameter.Type == DbType.DateTime2)
             {
-                // NHibernate datetime: 2022-03-24T18:37:42.9553368+02:00
-                // SQL Server datetime: 2022-03-14 16:09:07.043
                 var datetime = DateTime.Parse(parameter.Value, null, DateTimeStyles.RoundtripKind);
                 parameter.Value = datetime.ToString("yyyy-MM-dd HH:mm:ss.fff");
                 parameter.Value = $"'{parameter.Value}'";
             }
 
-            if (parameter.Type == typeof(DateTimeOffset))
+            if (parameter.Type == DbType.DateTimeOffset)
             {
-                // NHibernate datetimeoffset: 2022-03-23T17:30:00.0798130+00:00
-                // SQL Server datetime: 2022-03-14 14:00:00.1800000 +00:00
                 var offset = DateTimeOffset.Parse(parameter.Value, null, DateTimeStyles.RoundtripKind);
                 parameter.Value = offset.ToString("yyyy-MM-dd HH:mm:ss.fffffff zzz");
                 parameter.Value = $"'{parameter.Value}'";
@@ -89,10 +91,12 @@ namespace NHibernateQueryViewer
         }
     }
 
+    // TODO: could use
+    // https://docs.microsoft.com/en-us/dotnet/api/system.data.sqlclient.sqlparameter
     internal class Parameter
     {
         public string Key { get; set; } = string.Empty;
         public string Value { get; set; } = string.Empty;
-        public Type? Type { get; set; }
+        public DbType Type { get; set; }
     }
 }
