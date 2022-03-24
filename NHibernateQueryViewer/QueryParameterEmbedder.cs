@@ -82,29 +82,28 @@ namespace NHibernateQueryViewer
         private void ConvertValuesFromDotNetToSqlServer(Parameter parameter)
         {
             if (parameter.Value.ToUpper() == "NULL") return;
+            if (decimal.TryParse(parameter.Value, out _)) return;
 
-            if (parameter.Type == DbType.Boolean)
+            switch (parameter.Type)
             {
-                parameter.Value = bool.Parse(parameter.Value) ? "1" : "0";
-            }
+                case DbType.DateTime:
+                case DbType.DateTime2:
+                    var datetime = DateTime.Parse(parameter.Value, null, DateTimeStyles.RoundtripKind);
+                    parameter.Value = datetime.ToString("yyyy-MM-dd HH:mm:ss.fff");
+                    parameter.Value = $"'{parameter.Value}'";
+                    break;
+                case DbType.DateTimeOffset:
+                    var offset = DateTimeOffset.Parse(parameter.Value, null, DateTimeStyles.RoundtripKind);
+                    parameter.Value = offset.ToString("yyyy-MM-dd HH:mm:ss.fffffff zzz");
+                    parameter.Value = $"'{parameter.Value}'";
+                    break;
+                case DbType.Boolean:
+                    parameter.Value = bool.Parse(parameter.Value) ? "1" : "0";
+                    break;
 
-            if (parameter.Type == DbType.Guid)
-            {
-                parameter.Value = $"'{parameter.Value}'";
-            }
-
-            if (parameter.Type == DbType.DateTime || parameter.Type == DbType.DateTime2)
-            {
-                var datetime = DateTime.Parse(parameter.Value, null, DateTimeStyles.RoundtripKind);
-                parameter.Value = datetime.ToString("yyyy-MM-dd HH:mm:ss.fff");
-                parameter.Value = $"'{parameter.Value}'";
-            }
-
-            if (parameter.Type == DbType.DateTimeOffset)
-            {
-                var offset = DateTimeOffset.Parse(parameter.Value, null, DateTimeStyles.RoundtripKind);
-                parameter.Value = offset.ToString("yyyy-MM-dd HH:mm:ss.fffffff zzz");
-                parameter.Value = $"'{parameter.Value}'";
+                default:
+                    parameter.Value = $"'{parameter.Value}'";
+                    break;
             }
         }
     }
