@@ -129,5 +129,19 @@ namespace Tests
 
             Assert.That(query, Is.EqualTo("INSERT INTO Admin_ServerRequestLogger (Message) VALUES ('Message with ;@')"));
         }
+
+        [Test]
+        public void EmbedsParametersInAllQueries()
+        {
+            _rawQuery.Append("SELECT Id FROM Person WHERE Id = @p0;");
+            _rawQuery.Append("SELECT Id FROM Pet WHERE Name = @p1;");
+            _rawQuery.Append("@p0 = 1 [Type: Int32 (0:0:0)],");
+            _rawQuery.Append("@p1 = 'Max' [Type: String (0:0:0)]");
+
+            var query = _embedder.Embed(_rawQuery.ToString());
+
+            Assert.That(query, Contains.Substring("SELECT Id FROM Person WHERE Id = 1"));
+            Assert.That(query, Contains.Substring("SELECT Id FROM Pet WHERE Name = 'Max'"));
+        }
     }
 }
