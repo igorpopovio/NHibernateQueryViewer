@@ -44,7 +44,7 @@ namespace NHibernateQueryViewer
                 finalQuery = finalQuery.Replace(parameter.Name, parameter.Value);
 
             // remove part where parser crashes (either this or change parser/formatter)
-            finalQuery = finalQuery.Replace("OFFSET 0 ROWS FETCH FIRST 1 ROWS ONLY", "");
+            finalQuery = finalQuery.Replace("OFFSET", "-- OFFSET");
 
             return finalQuery.ToString();
         }

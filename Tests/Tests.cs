@@ -154,5 +154,20 @@ namespace Tests
 
             Assert.That(query, Is.EqualTo("INSERT INTO Admin_ServerRequestLogger (Message) VALUES ('line1\nline2\r')"));
         }
+
+        [TestCase(0, 1)]
+        [TestCase(1, 2)]
+        public void CommentsOffsetStatements(int offset, int row)
+        {
+            // limitation from underlying SQL formatter
+            // either change lib or comment out statements
+            // that crash it:
+            // OFFSET 0 ROWS FETCH FIRST 1 ROWS ONLY
+            _rawQuery.Append($"SELECT Id FROM Person WHERE Id = @p0 OFFSET {offset} ROWS FETCH FIRST {row} ROWS ONLY");
+
+            var query = _embedder.Embed(_rawQuery.ToString());
+
+            Assert.That(query, Is.EqualTo($"SELECT Id FROM Person WHERE Id = @p0 -- OFFSET {offset} ROWS FETCH FIRST {row} ROWS ONLY"));
+        }
     }
 }
