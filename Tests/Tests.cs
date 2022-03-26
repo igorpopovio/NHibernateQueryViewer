@@ -143,5 +143,16 @@ namespace Tests
             Assert.That(query, Contains.Substring("SELECT Id FROM Person WHERE Id = 1"));
             Assert.That(query, Contains.Substring("SELECT Id FROM Pet WHERE Name = 'Max'"));
         }
+
+        [Test]
+        public void EmbedsMultilineParameters()
+        {
+            _rawQuery.Append("INSERT INTO Admin_ServerRequestLogger (Message) VALUES (@p0);");
+            _rawQuery.Append("@p0 = 'line1\nline2\r' [Type: String (0:0:0)]");
+
+            var query = _embedder.Embed(_rawQuery.ToString());
+
+            Assert.That(query, Is.EqualTo("INSERT INTO Admin_ServerRequestLogger (Message) VALUES ('line1\nline2\r')"));
+        }
     }
 }
