@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Data;
 
 namespace NHibernateQueryViewer
 {
@@ -16,7 +17,20 @@ namespace NHibernateQueryViewer
         private readonly Func<IQueryConnection> _queryConnectionFactory;
 
         public ObservableCollection<QueryModel> Queries { get; set; }
+        public ICollectionView FilteredQueries { get; }
         public QueryModel? SelectedQuery { get; set; }
+
+        private string _filter;
+        public string Filter
+        {
+            get { return _filter; }
+            set
+            {
+                _filter = value;
+                FilteredQueries.Refresh();
+                OnPropertyChange();
+            }
+        }
 
         public bool IsCapturing { get; set; }
         public string CaptureButtonName { get; set; }
@@ -32,11 +46,21 @@ namespace NHibernateQueryViewer
             _queryConnectionFactory = queryConnectionFactory;
 
             Queries = new ObservableCollection<QueryModel>();
+            FilteredQueries = CollectionViewSource.GetDefaultView(Queries);
+            FilteredQueries.Filter = FilterQueries;
             ViewOption = ViewOption.Format;
             CaptureButtonName = "Capture";
 
             PropertyChanged += UpdateViewOptionForSelectedQuery;
             PropertyChanged += HandleConnections;
+        }
+
+        private bool FilterQueries(object obj)
+        {
+            var query = obj as QueryModel;
+            if (query == null) return false;
+
+            return query.RawQuery.ToLower().Contains(Filter.ToLower());
         }
 
         private void HandleConnections(object? sender, PropertyChangedEventArgs args)
