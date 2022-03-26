@@ -8,44 +8,57 @@ namespace Tests
 {
     public class Tests
     {
-        [Test]
-        public void CanEmbedParametersInQuery()
+        private QueryParameterEmbedder _embedder;
+        private StringBuilder _rawQuery;
+
+        [SetUp]
+        public void SetUp()
         {
-            var parser = new QueryParameterEmbedder();
-            var sb = new StringBuilder();
-            sb.Append("SELECT this_.Id as y0_ FROM Person this_ WHERE Id = @p1;");
-            sb.Append("SELECT last_insert_rowid();");
-            sb.Append("@p1 = 1 [Type: Int32 (0:0:0)]");
-
-            var query = parser.Embed(sb.ToString());
-
-            Assert.That(query, Contains.Substring("SELECT this_.Id as y0_ FROM Person this_ WHERE Id = 1"));
-            Assert.That(query, Contains.Substring("SELECT last_insert_rowid()"));
+            _embedder = new QueryParameterEmbedder();
+            _rawQuery = new StringBuilder();
         }
 
         [Test]
-        public void EmbedsParametersInReverseOrder()
+        public void EmbedsIntegerParameters()
         {
-            var parser = new QueryParameterEmbedder();
-            var sb = new StringBuilder();
-            sb.Append("SELECT this_.Id as y0_ FROM Person this_ WHERE Id IN (@p1, @p1234);");
-            sb.Append("@p1 = 1 [Type: Int32 (0:0:0)], @p1234 = 2 [Type: Int32 (0:0:0)]");
+            _rawQuery.Append("SELECT Id FROM Person WHERE Id = @p0;");
+            _rawQuery.Append("@p0 = 1 [Type: Int32 (0:0:0)]");
 
-            var query = parser.Embed(sb.ToString());
+            var query = _embedder.Embed(_rawQuery.ToString());
 
-            Assert.That(query, Is.EqualTo("SELECT this_.Id as y0_ FROM Person this_ WHERE Id IN (1, 2)"));
+            Assert.That(query, Is.EqualTo("SELECT Id FROM Person WHERE Id = 1"));
+        }
+
+        [Test]
+        public void EmbedsDoubleParameters()
+        {
+            _rawQuery.Append("SELECT Id FROM Person WHERE Height > @p0;");
+            _rawQuery.Append("@p0 = 1.83 [Type: Double (0:0:0)]");
+
+            var query = _embedder.Embed(_rawQuery.ToString());
+
+            Assert.That(query, Is.EqualTo("SELECT Id FROM Person WHERE Height > 1.83"));
+        }
+
+        [Test]
+        public void EmbedsParametersWithSimilarNames()
+        {
+            _rawQuery.Append("SELECT Id FROM Person WHERE Id IN (@p123, @p1234);");
+            _rawQuery.Append("@p123 = 1 [Type: Int32 (0:0:0)], @p1234 = 2 [Type: Int32 (0:0:0)]");
+
+            var query = _embedder.Embed(_rawQuery.ToString());
+
+            Assert.That(query, Is.EqualTo("SELECT Id FROM Person WHERE Id IN (1, 2)"));
         }
 
         [TestCase("DateTime")]
         [TestCase("DateTime2")]
         public void EmbedsDateTimeParameters(string dateTimeType)
         {
-            var parser = new QueryParameterEmbedder();
-            var sb = new StringBuilder();
-            sb.Append("INSERT INTO Admin_ErrorLog (RecordDateTime) VALUES (@p0);");
-            sb.Append($"@p0 = 2022-03-24T18:37:42.9553368+02:00 [Type: {dateTimeType} (10:0:0)]");
+            _rawQuery.Append("INSERT INTO Admin_ErrorLog (RecordDateTime) VALUES (@p0);");
+            _rawQuery.Append($"@p0 = 2022-03-24T18:37:42.9553368+02:00 [Type: {dateTimeType} (10:0:0)]");
 
-            var query = parser.Embed(sb.ToString());
+            var query = _embedder.Embed(_rawQuery.ToString());
 
             Assert.That(query, Is.EqualTo("INSERT INTO Admin_ErrorLog (RecordDateTime) VALUES ('2022-03-24 18:37:42.955')"));
         }
@@ -53,12 +66,10 @@ namespace Tests
         [Test]
         public void EmbedsDateTimeOffsetParameters()
         {
-            var parser = new QueryParameterEmbedder();
-            var sb = new StringBuilder();
-            sb.Append("INSERT INTO Admin_ErrorLog (RecordDateTime) VALUES (@p0);");
-            sb.Append("@p0 = 2022-03-23T17:30:00.0798130+00:00 [Type: DateTimeOffset (10:0:0)]");
+            _rawQuery.Append("INSERT INTO Admin_ErrorLog (RecordDateTime) VALUES (@p0);");
+            _rawQuery.Append("@p0 = 2022-03-23T17:30:00.0798130+00:00 [Type: DateTimeOffset (10:0:0)]");
 
-            var query = parser.Embed(sb.ToString());
+            var query = _embedder.Embed(_rawQuery.ToString());
 
             Assert.That(query, Is.EqualTo("INSERT INTO Admin_ErrorLog (RecordDateTime) VALUES ('2022-03-23 17:30:00.0798130 +00:00')"));
         }
@@ -66,12 +77,10 @@ namespace Tests
         [Test]
         public void EmbedsNullParameters()
         {
-            var parser = new QueryParameterEmbedder();
-            var sb = new StringBuilder();
-            sb.Append("INSERT INTO Admin_Session (RecordDateTime) VALUES (@p0);");
-            sb.Append("@p0 = NULL [Type: DateTimeOffset (10:0:0)]");
+            _rawQuery.Append("INSERT INTO Admin_Session (RecordDateTime) VALUES (@p0);");
+            _rawQuery.Append("@p0 = NULL [Type: DateTimeOffset (10:0:0)]");
 
-            var query = parser.Embed(sb.ToString());
+            var query = _embedder.Embed(_rawQuery.ToString());
 
             Assert.That(query, Is.EqualTo("INSERT INTO Admin_Session (RecordDateTime) VALUES (NULL)"));
         }
@@ -79,13 +88,11 @@ namespace Tests
         [Test]
         public void EmbedsBooleanParameters()
         {
-            var parser = new QueryParameterEmbedder();
-            var sb = new StringBuilder();
-            sb.Append("INSERT INTO Users (IsSystem, IsDefault) VALUES (@p0, @p1);");
-            sb.Append("@p0 = True [Type: Boolean (0:0:0)]");
-            sb.Append("@p1 = False [Type: Boolean (0:0:0)]");
+            _rawQuery.Append("INSERT INTO Users (IsSystem, IsDefault) VALUES (@p0, @p1);");
+            _rawQuery.Append("@p0 = True [Type: Boolean (0:0:0)]");
+            _rawQuery.Append("@p1 = False [Type: Boolean (0:0:0)]");
 
-            var query = parser.Embed(sb.ToString());
+            var query = _embedder.Embed(_rawQuery.ToString());
 
             Assert.That(query, Is.EqualTo("INSERT INTO Users (IsSystem, IsDefault) VALUES (1, 0)"));
         }
@@ -93,12 +100,10 @@ namespace Tests
         [Test]
         public void EmbedsGuidParameters()
         {
-            var parser = new QueryParameterEmbedder();
-            var sb = new StringBuilder();
-            sb.Append("INSERT INTO Admin_ServerRequestLogger (ServerRequestId) VALUES (@p0);");
-            sb.Append("@p0 = 1add7a47-e0ae-4017-8338-be8d271fbd69 [Type: Guid (10:0:0)]");
+            _rawQuery.Append("INSERT INTO Admin_ServerRequestLogger (ServerRequestId) VALUES (@p0);");
+            _rawQuery.Append("@p0 = 1add7a47-e0ae-4017-8338-be8d271fbd69 [Type: Guid (10:0:0)]");
 
-            var query = parser.Embed(sb.ToString());
+            var query = _embedder.Embed(_rawQuery.ToString());
 
             Assert.That(query, Is.EqualTo("INSERT INTO Admin_ServerRequestLogger (ServerRequestId) VALUES ('1add7a47-e0ae-4017-8338-be8d271fbd69')"));
         }
