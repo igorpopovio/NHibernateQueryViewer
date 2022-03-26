@@ -107,5 +107,27 @@ namespace Tests
 
             Assert.That(query, Is.EqualTo("INSERT INTO Admin_ServerRequestLogger (ServerRequestId) VALUES ('1add7a47-e0ae-4017-8338-be8d271fbd69')"));
         }
+
+        [Test]
+        public void EmbedsStringParameters()
+        {
+            _rawQuery.Append("INSERT INTO Admin_ServerRequestLogger (Message) VALUES (@p0);");
+            _rawQuery.Append("@p0 = 'Simple message' [Type: String (0:0:0)]");
+
+            var query = _embedder.Embed(_rawQuery.ToString());
+
+            Assert.That(query, Is.EqualTo("INSERT INTO Admin_ServerRequestLogger (Message) VALUES ('Simple message')"));
+        }
+
+        [Test]
+        public void EmbedsStringsWithSemicolons()
+        {
+            _rawQuery.Append("INSERT INTO Admin_ServerRequestLogger (Message) VALUES (@p0);");
+            _rawQuery.Append("@p0 = 'Message with ;@' [Type: String (0:0:0)]");
+
+            var query = _embedder.Embed(_rawQuery.ToString());
+
+            Assert.That(query, Is.EqualTo("INSERT INTO Admin_ServerRequestLogger (Message) VALUES ('Message with ;@')"));
+        }
     }
 }
