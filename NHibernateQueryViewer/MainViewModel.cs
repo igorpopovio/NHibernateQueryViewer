@@ -57,6 +57,7 @@ namespace NHibernateQueryViewer
 
         private bool FilterQueries(object obj)
         {
+            if (string.IsNullOrWhiteSpace(Filter)) return false;
             var query = obj as QueryModel;
             if (query == null) return false;
 
