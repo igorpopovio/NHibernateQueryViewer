@@ -8,6 +8,12 @@
     Title="NHibernate Query Viewer"
     Width="1000"
     Height="500">
+    <Window.InputBindings>
+        <KeyBinding
+            Key="F"
+            Command="{s:Action DoFocusFilter}"
+            Modifiers="Ctrl" />
+    </Window.InputBindings>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -52,7 +58,7 @@
                 <ColumnDefinition Width="3*" MinWidth="500" />
             </Grid.ColumnDefinitions>
 
-            <TextBox Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged, Delay=500}" />
+            <TextBox x:Name="Filter" Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged, Delay=500}" />
 
             <ListView
                 Grid.Row="1"

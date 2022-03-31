@@ -1,5 +1,6 @@
 ﻿using ICSharpCode.AvalonEdit.Highlighting;
 
+using System;
 using System.ComponentModel;
 using System.IO;
 using System.Windows;
@@ -24,6 +25,13 @@ namespace NHibernateQueryViewer
             if (ViewModel == null) return;
 
             ViewModel.PropertyChanged += LoadQuery;
+            ViewModel.FocusFilter += ViewModel_FocusFilter;
+        }
+
+        private void ViewModel_FocusFilter(object? sender, EventArgs args)
+        {
+            Filter.Focus();
+            Filter.SelectAll();
         }
 
         private void LoadQuery(object? sender, PropertyChangedEventArgs args)

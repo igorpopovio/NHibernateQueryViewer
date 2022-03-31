@@ -32,6 +32,8 @@ namespace NHibernateQueryViewer
             }
         }
 
+        public event EventHandler? FocusFilter;
+
         public bool IsCapturing { get; set; }
         public string CaptureButtonName { get; set; }
         public ViewOption ViewOption { get; set; }
@@ -101,6 +103,14 @@ namespace NHibernateQueryViewer
         {
             Queries.Clear();
             SelectedQuery = null;
+        }
+
+        public void DoFocusFilter()
+        {
+            // We want to prevent using UI components in the view model (MVVM),
+            // so instead of setting the focus on the text box in here,
+            // we invoke an event that the view/window will subscribe to.
+            FocusFilter?.Invoke(this, EventArgs.Empty);
         }
 
         private void UpdateViewOptionForSelectedQuery(object? sender, PropertyChangedEventArgs args)
