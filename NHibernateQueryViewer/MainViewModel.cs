@@ -20,7 +20,7 @@ namespace NHibernateQueryViewer
         public ICollectionView FilteredQueries { get; }
         public QueryModel? SelectedQuery { get; set; }
 
-        private string _filter;
+        private string _filter = string.Empty;
         public string Filter
         {
             get { return _filter; }
@@ -44,7 +44,6 @@ namespace NHibernateQueryViewer
             _queryFormatter = queryFormatter;
             _queryParameterEmbedder = queryParameterEmbedder;
             _queryConnectionFactory = queryConnectionFactory;
-
             Queries = new ObservableCollection<QueryModel>();
             FilteredQueries = CollectionViewSource.GetDefaultView(Queries);
             FilteredQueries.Filter = FilterQueries;
@@ -57,11 +56,11 @@ namespace NHibernateQueryViewer
 
         private bool FilterQueries(object obj)
         {
-            if (string.IsNullOrWhiteSpace(Filter)) return false;
+            if (string.IsNullOrWhiteSpace(Filter)) return true;
             var query = obj as QueryModel;
             if (query == null) return false;
 
-            return query.RawQuery.ToLower().Contains(Filter.ToLower());
+            return query.RawQuery?.ToLower().Contains(Filter.ToLower()) ?? true;
         }
 
         private void HandleConnections(object? sender, PropertyChangedEventArgs args)
