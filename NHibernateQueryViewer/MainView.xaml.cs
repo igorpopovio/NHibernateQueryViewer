@@ -26,6 +26,7 @@ namespace NHibernateQueryViewer
 
             ViewModel.PropertyChanged += LoadQuery;
             ViewModel.FocusFilter += ViewModel_FocusFilter;
+            Loaded -= MainView_Loaded;
         }
 
         private void ViewModel_FocusFilter(object? sender, EventArgs args)
