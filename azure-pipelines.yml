@@ -5,7 +5,7 @@ pool:
   vmImage: 'windows-latest'
 
 stages:
-  - stage: build and analyze
+  - stage: build
     displayName: Build and analyze
     jobs:
       - job: Build
@@ -30,7 +30,7 @@ stages:
             projects: '**/*.sln'
             arguments: '/warnaserror /warn:5'
 
-  - stage: unit tests
+  - stage: test
     displayName: unit tests
     jobs:
       - job: Test
