@@ -28,9 +28,11 @@ steps:
   inputs:
     command: 'build'
     projects: '**/*.sln'
+    arguments: '/warnaserror /warn:5'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test'
   inputs:
     command: 'test'
     projects: '**/*Tests.csproj'
+    arguments: '/warnaserror /warn:5'
