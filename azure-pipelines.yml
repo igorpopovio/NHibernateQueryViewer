@@ -4,30 +4,34 @@
 # https://docs.microsoft.com/azure/devops/pipelines/apps/windows/dot-net
 
 trigger:
-- master
+- main
 
 pool:
   vmImage: 'windows-latest'
 
-variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Debug'
-
 steps:
-- task: NuGetToolInstaller@1
 
-- task: NuGetCommand@2
+- task: UseDotNet@2
+  displayName: 'Use latest .NET Core SDK'
   inputs:
-    restoreSolution: '$(solution)'
+    packageType: 'sdk'
+    version: '6.x'
 
-- task: VSBuild@1
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet restore'
   inputs:
-    solution: '$(solution)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    command: restore
+    projects: '**/*.csproj'
 
-- task: VSTest@2
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet build'
   inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    command: 'build'
+    projects: '**/*.sln'
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet test'
+  inputs:
+    command: 'test'
+    projects: '**/*Tests.csproj'
+    arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
