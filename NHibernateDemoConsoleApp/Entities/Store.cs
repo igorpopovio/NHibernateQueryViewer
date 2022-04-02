@@ -1,11 +1,9 @@
-using System.Collections.Generic;
-
 namespace Examples.FirstProject.Entities
 {
     public class Store
     {
         public virtual int Id { get; protected set; }
-        public virtual string Name { get; set; }
+        public virtual string Name { get; set; } = string.Empty;
         public virtual IList<Product> Products { get; set; }
         public virtual IList<Employee> Staff { get; set; }
 
