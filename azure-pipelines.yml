@@ -15,7 +15,7 @@ steps:
   displayName: 'Use latest .NET Core SDK'
   inputs:
     packageType: 'sdk'
-    version: '6.x'
+    version: '6.x-desktop'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet restore'
