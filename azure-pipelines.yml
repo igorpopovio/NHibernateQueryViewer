@@ -28,10 +28,10 @@ stages:
           inputs:
             command: 'build'
             projects: '**/*.sln'
-            arguments: '/warnaserror /warn:5'
+            arguments: '/p:TreatWarningsAsErrors=true /p:WarningLevel=5'
 
   - stage: test
-    displayName: unit tests
+    displayName: Run unit tests
     jobs:
       - job: Test
         steps:
@@ -41,4 +41,4 @@ stages:
           inputs:
             command: 'test'
             projects: '**/*Tests.csproj'
-            arguments: '/warnaserror /warn:5'
+            arguments: '/p:TreatWarningsAsErrors=true /p:WarningLevel=5'
