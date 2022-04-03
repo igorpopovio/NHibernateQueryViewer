@@ -107,12 +107,12 @@ public class QueryParameterEmbedder : IQueryParameterEmbedder
         {
             case DbType.DateTime:
             case DbType.DateTime2:
-                var datetime = DateTime.Parse(parameter.Value, null, DateTimeStyles.RoundtripKind);
-                parameter.Value = datetime.ToString("yyyy-MM-dd HH:mm:ss.fff");
+                var datetime = DateTime.Parse(parameter.Value, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
+                parameter.Value = datetime.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture);
                 parameter.Value = $"'{parameter.Value}'";
                 break;
             case DbType.DateTimeOffset:
-                var offset = DateTimeOffset.Parse(parameter.Value, null, DateTimeStyles.RoundtripKind);
+                var offset = DateTimeOffset.Parse(parameter.Value, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
                 parameter.Value = offset.ToString("yyyy-MM-dd HH:mm:ss.fffffff zzz");
                 parameter.Value = $"'{parameter.Value}'";
                 break;

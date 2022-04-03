@@ -2,6 +2,7 @@ using NHibernateQueryViewer;
 
 using NUnit.Framework;
 
+using System;
 using System.Text;
 
 namespace Tests
@@ -55,8 +56,10 @@ namespace Tests
         [TestCase("DateTime2")]
         public void EmbedsDateTimeParameters(string dateTimeType)
         {
+            var localDateTime = new DateTime(2022, 3, 24, 18, 37, 42, 955, DateTimeKind.Local);
+            var roundTripDateTime = localDateTime.ToString("O");
             _rawQuery.Append("INSERT INTO Admin_ErrorLog (RecordDateTime) VALUES (@p0);");
-            _rawQuery.Append($"@p0 = 2022-03-24T18:37:42.9553368+02:00 [Type: {dateTimeType} (10:0:0)]");
+            _rawQuery.Append($"@p0 = {roundTripDateTime} [Type: {dateTimeType} (10:0:0)]");
 
             var query = _embedder.Embed(_rawQuery.ToString());
 
