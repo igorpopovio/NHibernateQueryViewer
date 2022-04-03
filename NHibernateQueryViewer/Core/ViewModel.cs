@@ -1,4 +1,5 @@
-﻿namespace NHibernateQueryViewer.Core
+﻿namespace NHibernateQueryViewer.Core;
+
+public class ViewModel : ObservableObject
 {
-    public class ViewModel : ObservableObject { }
 }

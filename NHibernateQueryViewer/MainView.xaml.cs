@@ -1,63 +1,66 @@
-﻿using ICSharpCode.AvalonEdit.Highlighting;
+﻿namespace NHibernateQueryViewer;
 
 using System;
 using System.ComponentModel;
 using System.IO;
 using System.Windows;
 
-namespace NHibernateQueryViewer
+using ICSharpCode.AvalonEdit.Highlighting;
+
+public partial class MainView
 {
-    /// <summary>
-    /// Interaction logic for MainView.xaml
-    /// </summary>
-    public partial class MainView
+    public MainView()
     {
-        public MainViewModel? ViewModel => DataContext as MainViewModel;
+        InitializeComponent();
+        Loaded += MainView_Loaded;
+    }
 
-        public MainView()
+    public MainViewModel? ViewModel => DataContext as MainViewModel;
+
+    private void MainView_Loaded(object sender, RoutedEventArgs args)
+    {
+        if (ViewModel == null)
         {
-            InitializeComponent();
-            Loaded += MainView_Loaded;
+            return;
         }
 
-        private void MainView_Loaded(object sender, RoutedEventArgs args)
-        {
-            if (ViewModel == null) return;
+        ViewModel.PropertyChanged += LoadQuery;
+        ViewModel.FocusFilter += ViewModel_FocusFilter;
+        Loaded -= MainView_Loaded;
+    }
 
-            ViewModel.PropertyChanged += LoadQuery;
-            ViewModel.FocusFilter += ViewModel_FocusFilter;
-            Loaded -= MainView_Loaded;
+    private void ViewModel_FocusFilter(object? sender, EventArgs args)
+    {
+        Filter.Focus();
+        Filter.SelectAll();
+    }
+
+    private void LoadQuery(object? sender, PropertyChangedEventArgs args)
+    {
+        if (args.PropertyName != nameof(ViewModel.SelectedQuery) && args.PropertyName != nameof(ViewModel.ViewOption))
+        {
+            return;
         }
 
-        private void ViewModel_FocusFilter(object? sender, EventArgs args)
+        if (ViewModel?.SelectedQuery?.DisplayQuery == null)
         {
-            Filter.Focus();
-            Filter.SelectAll();
+            textEditor.Text = null;
+            return;
         }
 
-        private void LoadQuery(object? sender, PropertyChangedEventArgs args)
-        {
-            if (args.PropertyName != nameof(ViewModel.SelectedQuery) && args.PropertyName != nameof(ViewModel.ViewOption)) return;
-            if (ViewModel?.SelectedQuery?.DisplayQuery == null)
-            {
-                textEditor.Text = null;
-                return;
-            }
+        var stream = GenerateStreamFrom(ViewModel.SelectedQuery.DisplayQuery);
+        textEditor.Load(stream);
+        var syntax = HighlightingManager.Instance.GetDefinition(ViewModel.SelectedQuery.Language);
+        textEditor.SyntaxHighlighting = syntax;
+    }
 
-            var stream = GenerateStreamFrom(ViewModel.SelectedQuery.DisplayQuery);
-            textEditor.Load(stream);
-            var syntax = HighlightingManager.Instance.GetDefinition(ViewModel.SelectedQuery.Language);
-            textEditor.SyntaxHighlighting = syntax;
-        }
-
-        public Stream GenerateStreamFrom(string input)
-        {
-            var stream = new MemoryStream();
-            var writer = new StreamWriter(stream);
-            writer.Write(input);
-            writer.Flush();
-            stream.Position = 0;
-            return stream;
-        }
+    private Stream GenerateStreamFrom(string input)
+    {
+        var stream = new MemoryStream();
+        var writer = new StreamWriter(stream);
+        writer.Write(input);
+        writer.Flush();
+        stream.Position = 0;
+        return stream;
     }
 }

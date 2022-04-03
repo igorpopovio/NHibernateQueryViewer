@@ -1,15 +1,14 @@
-﻿using System.ComponentModel;
+﻿namespace NHibernateQueryViewer.Core;
+
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace NHibernateQueryViewer.Core
+public class ObservableObject : INotifyPropertyChanged
 {
-    public class ObservableObject : INotifyPropertyChanged
-    {
-        public event PropertyChangedEventHandler? PropertyChanged;
+    public event PropertyChangedEventHandler? PropertyChanged;
 
-        protected virtual void OnPropertyChange([CallerMemberName] string name = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
+    protected virtual void OnPropertyChange([CallerMemberName] string name = "")
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }

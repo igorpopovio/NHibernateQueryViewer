@@ -1,4 +1,6 @@
-﻿using NHibernateQueryViewer.Core;
+﻿namespace NHibernateQueryViewer;
+
+using NHibernateQueryViewer.Core;
 
 using System;
 using System.Collections.Generic;
@@ -6,66 +8,72 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NHibernateQueryViewer
+public class QueryConnection : IQueryConnection, IDisposable
 {
-    public class QueryConnection : IQueryConnection, IDisposable
+    public const int DefaultPort = 61234;
+    private UdpClient _udpClient;
+    private bool _disposed;
+
+    private ISet<SocketError> _abortedErrorCodes = new HashSet<SocketError>()
     {
-        public const int DefaultPort = 61234;
-        private UdpClient _udpClient;
-        private bool _disposed;
+        SocketError.OperationAborted,
+        SocketError.ConnectionAborted,
+    };
 
-        private ISet<SocketError> _abortedErrorCodes = new HashSet<SocketError>()
+    public QueryConnection()
+        : this(new UdpClient(DefaultPort))
+    {
+    }
+
+    public QueryConnection(UdpClient udpClient)
+    {
+        _udpClient = udpClient;
+    }
+
+    public async Task<QueryModel> ReceiveQueryAsync()
+    {
+        if (_disposed)
         {
-            SocketError.OperationAborted,
-            SocketError.ConnectionAborted,
-        };
-
-        public QueryConnection()
-            : this(new UdpClient(DefaultPort)) { }
-
-        public QueryConnection(UdpClient udpClient)
-        {
-            _udpClient = udpClient;
+            throw new ObjectDisposedException(nameof(QueryConnection));
         }
 
-        public async Task<QueryModel> ReceiveQueryAsync()
+        try
         {
-            if (_disposed) throw new ObjectDisposedException(nameof(QueryConnection));
-
-            try
+            // TODO: call ReceiveAsync(CancellationToken cancellationToken)
+            // and implement proper cancellation instead of checking error codes
+            var result = await _udpClient.ReceiveAsync();
+            var loggingEvent = Encoding.UTF8.GetString(result.Buffer).Trim();
+            return new QueryModel { RawQuery = loggingEvent };
+        }
+        catch (SocketException exception)
+        {
+            if (_abortedErrorCodes.Contains(exception.SocketErrorCode))
             {
-                // TODO: call ReceiveAsync(CancellationToken cancellationToken)
-                // and implement proper cancellation instead of checking error codes
-                var result = await _udpClient.ReceiveAsync();
-                var loggingEvent = Encoding.UTF8.GetString(result.Buffer).Trim();
-                return new QueryModel { RawQuery = loggingEvent };
+                throw new ConnectionAbortedException("Connection was aborted", exception);
             }
-            catch (SocketException exception)
+            else
             {
-                if (_abortedErrorCodes.Contains(exception.SocketErrorCode))
-                    throw new ConnectionAbortedException("Connection was aborted", exception);
-                else
-                    throw new ConnectionException("Unknown connection error", exception);
+                throw new ConnectionException("Unknown connection error", exception);
             }
         }
+    }
 
-        protected virtual void Dispose(bool disposing)
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
         {
-            if (!_disposed)
+            if (disposing)
             {
-                if (disposing)
-                {
-                    _udpClient.Dispose();
-                }
-
-                _disposed = true;
+                _udpClient.Dispose();
             }
-        }
 
-        public void Dispose()
-        {
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
+            _disposed = true;
         }
     }
 }

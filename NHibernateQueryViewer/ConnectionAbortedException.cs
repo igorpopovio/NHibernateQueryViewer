@@ -1,10 +1,11 @@
-﻿using System;
+﻿namespace NHibernateQueryViewer;
 
-namespace NHibernateQueryViewer
+using System;
+
+public class ConnectionAbortedException : ConnectionException
 {
-    public class ConnectionAbortedException : ConnectionException
+    public ConnectionAbortedException(string message, Exception exception)
+        : base(message, exception)
     {
-        public ConnectionAbortedException(string message, Exception exception)
-            : base(message, exception) { }
     }
 }

@@ -1,9 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿namespace NHibernateQueryViewer.Core;
 
-namespace NHibernateQueryViewer.Core
+using System.Threading.Tasks;
+
+public interface IQueryConnection
 {
-    public interface IQueryConnection
-    {
-        Task<QueryModel> ReceiveQueryAsync();
-    }
+    Task<QueryModel> ReceiveQueryAsync();
 }

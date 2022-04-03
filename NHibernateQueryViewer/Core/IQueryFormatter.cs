@@ -1,7 +1,6 @@
-﻿namespace NHibernateQueryViewer.Core
+﻿namespace NHibernateQueryViewer.Core;
+
+public interface IQueryFormatter
 {
-    public interface IQueryFormatter
-    {
-        string Format(string query);
-    }
+    string Format(string query);
 }

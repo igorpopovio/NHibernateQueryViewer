@@ -1,20 +1,19 @@
-﻿using NHibernateQueryViewer.Core;
+﻿namespace NHibernateQueryViewer;
+
+using NHibernateQueryViewer.Core;
 
 using Stylet;
 
 using StyletIoC;
 
-namespace NHibernateQueryViewer
+public class Bootstrapper : Bootstrapper<MainViewModel>
 {
-    public class Bootstrapper : Bootstrapper<MainViewModel>
+    protected override void ConfigureIoC(IStyletIoCBuilder builder)
     {
-        protected override void ConfigureIoC(IStyletIoCBuilder builder)
-        {
-            base.ConfigureIoC(builder);
+        base.ConfigureIoC(builder);
 
-            builder.Bind<IQueryFormatter>().To<LaanQueryFormatter>().InSingletonScope();
-            builder.Bind<IQueryParameterEmbedder>().To<QueryParameterEmbedder>().InSingletonScope();
-            builder.Bind<IQueryConnection>().To<QueryConnection>();
-        }
+        builder.Bind<IQueryFormatter>().To<LaanQueryFormatter>().InSingletonScope();
+        builder.Bind<IQueryParameterEmbedder>().To<QueryParameterEmbedder>().InSingletonScope();
+        builder.Bind<IQueryConnection>().To<QueryConnection>();
     }
 }

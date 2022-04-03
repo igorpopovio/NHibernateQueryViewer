@@ -1,7 +1,6 @@
-﻿namespace NHibernateQueryViewer.Core
+﻿namespace NHibernateQueryViewer.Core;
+
+public interface IQueryParameterEmbedder
 {
-    public interface IQueryParameterEmbedder
-    {
-        string Embed(string queryWithParameters);
-    }
+    string Embed(string queryWithParameters);
 }

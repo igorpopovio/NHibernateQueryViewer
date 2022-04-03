@@ -1,21 +1,20 @@
-﻿using Laan.Sql.Formatter;
+﻿namespace NHibernateQueryViewer;
+
+using Laan.Sql.Formatter;
 
 using NHibernateQueryViewer.Core;
 
-namespace NHibernateQueryViewer
+public class LaanQueryFormatter : IQueryFormatter
 {
-    public class LaanQueryFormatter : IQueryFormatter
+    private readonly FormattingEngine _formatter;
+
+    public LaanQueryFormatter()
     {
-        private FormattingEngine _formatter;
+        _formatter = new FormattingEngine();
+    }
 
-        public LaanQueryFormatter()
-        {
-            _formatter = new FormattingEngine();
-        }
-
-        public string Format(string query)
-        {
-            return _formatter.Execute(query);
-        }
+    public string Format(string query)
+    {
+        return _formatter.Execute(query);
     }
 }
