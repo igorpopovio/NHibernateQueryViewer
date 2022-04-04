@@ -37,7 +37,7 @@ public class MainViewModel : ViewModel
 
     public event EventHandler? FocusFilter;
 
-    public ObservableCollection<QueryModel> Queries { get; set; }
+    public ObservableCollection<QueryModel> Queries { get; }
 
     public ICollectionView FilteredQueries { get; }
 

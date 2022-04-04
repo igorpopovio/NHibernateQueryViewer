@@ -11,14 +11,16 @@ using System.Threading.Tasks;
 public class QueryConnection : IQueryConnection, IDisposable
 {
     public const int DefaultPort = 61234;
-    private UdpClient _udpClient;
-    private bool _disposed;
 
-    private ISet<SocketError> _abortedErrorCodes = new HashSet<SocketError>()
+    private readonly UdpClient _udpClient;
+
+    private readonly ISet<SocketError> _abortedErrorCodes = new HashSet<SocketError>()
     {
         SocketError.OperationAborted,
         SocketError.ConnectionAborted,
     };
+
+    private bool _disposed;
 
     public QueryConnection()
         : this(new UdpClient(DefaultPort))
