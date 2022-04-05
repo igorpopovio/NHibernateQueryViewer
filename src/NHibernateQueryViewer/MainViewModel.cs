@@ -5,6 +5,7 @@ using NHibernateQueryViewer.Core;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
@@ -107,7 +108,9 @@ public class MainViewModel : ViewModel
             return false;
         }
 
-        return query.RawQuery?.ToLower().Contains(Filter.ToLower()) ?? true;
+        return
+            query.RawQuery?.ToUpperInvariant().Contains(
+                Filter.ToUpperInvariant(), StringComparison.Ordinal) ?? true;
     }
 
     private void HandleConnections(object? sender, PropertyChangedEventArgs args)
@@ -166,12 +169,12 @@ public class MainViewModel : ViewModel
         {
             var message = new StringBuilder();
             message.AppendLine($"# Error");
-            message.AppendLine($"Occured when using the **{ViewOption}** view option.");
+            message.AppendLine(CultureInfo.InvariantCulture, $"Occured when using the **{ViewOption}** view option.");
             message.AppendLine();
             message.AppendLine("## Raw query");
             message.AppendLine(SelectedQuery.RawQuery);
             message.AppendLine("## Exception");
-            message.AppendLine($"{exception.Message}{Environment.NewLine}{exception.StackTrace}");
+            message.AppendLine(CultureInfo.InvariantCulture, $"{exception.Message}{Environment.NewLine}{exception.StackTrace}");
             SelectedQuery.DisplayQuery = message.ToString();
             SelectedQuery.Language = "MarkDownWithFontSize";
         }

@@ -33,7 +33,12 @@ public class QueryParameterEmbedder : IQueryParameterEmbedder
 
     public string Embed(string queryWithParameters)
     {
-        var indexOfQuery = queryWithParameters.IndexOf(";@");
+        if (queryWithParameters == null)
+        {
+            throw new ArgumentNullException(nameof(queryWithParameters));
+        }
+
+        var indexOfQuery = queryWithParameters.IndexOf(";@", StringComparison.InvariantCulture);
         var rawQuery = indexOfQuery == -1 ? queryWithParameters : queryWithParameters[..indexOfQuery];
         var rawParameters = indexOfQuery == -1 ? string.Empty : queryWithParameters[indexOfQuery..];
         var parameters = LoadParametersFrom(rawParameters);
@@ -79,16 +84,16 @@ public class QueryParameterEmbedder : IQueryParameterEmbedder
             Name = groups["name"].Value,
             Type = (DbType)Enum.Parse(typeof(DbType), groups["type"].Value),
             Value = groups["value"].Value,
-            Size = int.Parse(groups["size"].Value),
-            Scale = byte.Parse(groups["scale"].Value),
-            Precision = byte.Parse(groups["precision"].Value),
+            Size = int.Parse(groups["size"].Value, CultureInfo.InvariantCulture),
+            Scale = byte.Parse(groups["scale"].Value, CultureInfo.InvariantCulture),
+            Precision = byte.Parse(groups["precision"].Value, CultureInfo.InvariantCulture),
         };
         return parameter;
     }
 
     private void ConvertValuesFromDotNetToSqlServer(Parameter parameter)
     {
-        if (parameter.Value.ToUpper() == "NULL")
+        if (parameter.Value.ToUpper(CultureInfo.InvariantCulture) == "NULL")
         {
             return;
         }
@@ -113,7 +118,7 @@ public class QueryParameterEmbedder : IQueryParameterEmbedder
                 break;
             case DbType.DateTimeOffset:
                 var offset = DateTimeOffset.Parse(parameter.Value, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
-                parameter.Value = offset.ToString("yyyy-MM-dd HH:mm:ss.fffffff zzz");
+                parameter.Value = offset.ToString("yyyy-MM-dd HH:mm:ss.fffffff zzz", CultureInfo.InvariantCulture);
                 parameter.Value = $"'{parameter.Value}'";
                 break;
             case DbType.Boolean:

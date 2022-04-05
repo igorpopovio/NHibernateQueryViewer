@@ -67,6 +67,9 @@ dotnet_diagnostic.SA1309.severity = none
 # CA1014: Mark assemblies with CLSCompliant
 dotnet_diagnostic.CA1014.severity = none
 
+# CA1822: Mark members as static
+dotnet_diagnostic.CA1822.severity = none
+
 [*.{cs,vb}]
 #### Naming styles ####
 
