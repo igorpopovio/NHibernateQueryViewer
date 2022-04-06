@@ -70,6 +70,9 @@ dotnet_diagnostic.CA1014.severity = none
 # CA1822: Mark members as static
 dotnet_diagnostic.CA1822.severity = none
 
+# CA2007: Consider calling ConfigureAwait on the awaited task
+dotnet_diagnostic.CA2007.severity = none
+
 [*.{cs,vb}]
 #### Naming styles ####
 
