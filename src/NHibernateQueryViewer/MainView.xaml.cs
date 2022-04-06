@@ -48,7 +48,7 @@ public partial class MainView
             return;
         }
 
-        var stream = GenerateStreamFrom(ViewModel.SelectedQuery.DisplayQuery);
+        using var stream = GenerateStreamFrom(ViewModel.SelectedQuery.DisplayQuery);
         textEditor.Load(stream);
         var syntax = HighlightingManager.Instance.GetDefinition(ViewModel.SelectedQuery.Language);
         textEditor.SyntaxHighlighting = syntax;
@@ -57,7 +57,7 @@ public partial class MainView
     private Stream GenerateStreamFrom(string input)
     {
         var stream = new MemoryStream();
-        var writer = new StreamWriter(stream);
+        using var writer = new StreamWriter(stream, leaveOpen: true);
         writer.Write(input);
         writer.Flush();
         stream.Position = 0;
