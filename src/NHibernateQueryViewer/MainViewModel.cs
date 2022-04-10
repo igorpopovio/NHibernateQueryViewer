@@ -2,6 +2,8 @@
 
 using NHibernateQueryViewer.Core;
 
+using Stylet;
+
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -15,17 +17,23 @@ public class MainViewModel : ViewModel
     private readonly IQueryFormatter _queryFormatter;
     private readonly IQueryParameterEmbedder _queryParameterEmbedder;
     private readonly Func<IQueryConnection> _queryConnectionFactory;
+    private readonly IWindowManager _windowManager;
+    private readonly InclusionExclusionEditorViewModel _inclusionExclusionEditorViewModel;
     private IQueryConnection? _queryConnection;
     private string _filter = string.Empty;
 
     public MainViewModel(
         IQueryFormatter queryFormatter,
         IQueryParameterEmbedder queryParameterEmbedder,
-        Func<IQueryConnection> queryConnectionFactory)
+        Func<IQueryConnection> queryConnectionFactory,
+        IWindowManager windowManager,
+        InclusionExclusionEditorViewModel inclusionExclusionEditorViewModel)
     {
         _queryFormatter = queryFormatter;
         _queryParameterEmbedder = queryParameterEmbedder;
         _queryConnectionFactory = queryConnectionFactory;
+        _windowManager = windowManager;
+        _inclusionExclusionEditorViewModel = inclusionExclusionEditorViewModel;
         Queries = new ObservableCollection<QueryModel>();
         FilteredQueries = CollectionViewSource.GetDefaultView(Queries);
         FilteredQueries.Filter = FilterQueries;
@@ -94,6 +102,11 @@ public class MainViewModel : ViewModel
         // so instead of setting the focus on the text box in here,
         // we invoke an event that the view/window will subscribe to.
         FocusFilter?.Invoke(this, EventArgs.Empty);
+    }
+
+    public void OpenIncludeExcludeEditor()
+    {
+        _windowManager.ShowDialog(_inclusionExclusionEditorViewModel);
     }
 
     private bool FilterQueries(object obj)

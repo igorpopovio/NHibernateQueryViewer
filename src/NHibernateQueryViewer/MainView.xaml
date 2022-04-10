@@ -58,7 +58,17 @@
                 <ColumnDefinition Width="3*" MinWidth="500" />
             </Grid.ColumnDefinitions>
 
-            <TextBox x:Name="Filter" Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged, Delay=500}" />
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBox x:Name="Filter" Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged, Delay=500}" />
+                <Button
+                    Grid.Column="1"
+                    Command="{s:Action OpenIncludeExcludeEditor}"
+                    Content="Include/Exclude" />
+            </Grid>
 
             <ListView
                 Grid.Row="1"
