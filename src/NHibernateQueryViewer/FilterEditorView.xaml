@@ -8,6 +8,9 @@
     ResizeMode="NoResize"
     SizeToContent="Height"
     WindowStartupLocation="CenterOwner">
+    <Window.InputBindings>
+        <KeyBinding Key="Esc" Command="{s:Action Cancel}" />
+    </Window.InputBindings>
 
     <StackPanel Margin="10" Orientation="Vertical">
         <TextBlock Text="Write each keyword on its own line. Include has priority over exclude." />
