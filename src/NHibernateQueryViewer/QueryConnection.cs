@@ -1,6 +1,6 @@
 ﻿namespace NHibernateQueryViewer;
 
-using NHibernateQueryViewer.Core;
+using NHibernateQueryViewer.Core.Queries;
 
 using System;
 using System.Collections.Generic;

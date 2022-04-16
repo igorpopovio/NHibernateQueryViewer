@@ -1,4 +1,4 @@
-﻿namespace NHibernateQueryViewer.Core;
+﻿namespace NHibernateQueryViewer.Core.Queries;
 
 public interface IQueryParameterEmbedder
 {

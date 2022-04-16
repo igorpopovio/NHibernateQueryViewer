@@ -2,7 +2,7 @@
 
 using Laan.Sql.Formatter;
 
-using NHibernateQueryViewer.Core;
+using NHibernateQueryViewer.Core.Queries;
 
 public class LaanQueryFormatter : IQueryFormatter
 {

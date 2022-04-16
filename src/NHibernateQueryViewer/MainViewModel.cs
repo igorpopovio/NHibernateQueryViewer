@@ -1,6 +1,7 @@
 ﻿namespace NHibernateQueryViewer;
 
 using NHibernateQueryViewer.Core;
+using NHibernateQueryViewer.Core.Queries;
 
 using Stylet;
 
