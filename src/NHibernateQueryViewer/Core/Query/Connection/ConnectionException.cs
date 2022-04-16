@@ -1,4 +1,4 @@
-﻿namespace NHibernateQueryViewer;
+﻿namespace NHibernateQueryViewer.Core.Queries;
 
 using System;
 
