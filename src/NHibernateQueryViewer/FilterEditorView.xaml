@@ -45,7 +45,7 @@
             <TextBox
                 Grid.Row="1"
                 Grid.Column="0"
-                Text="{Binding IncludeKeywords}" />
+                Text="{Binding IncludeKeywordsText}" />
 
             <TextBlock
                 Grid.Row="0"
@@ -54,7 +54,7 @@
             <TextBox
                 Grid.Row="1"
                 Grid.Column="2"
-                Text="{Binding ExcludeKeywords}" />
+                Text="{Binding ExcludeKeywordsText}" />
         </Grid>
 
         <StackPanel

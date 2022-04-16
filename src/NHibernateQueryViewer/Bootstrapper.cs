@@ -1,6 +1,7 @@
 ﻿namespace NHibernateQueryViewer;
 
 using NHibernateQueryViewer.Core;
+using NHibernateQueryViewer.Core.Filters;
 
 using Stylet;
 
@@ -22,5 +23,6 @@ public class Bootstrapper : Bootstrapper<MainViewModel>
         builder.Bind<IQueryFormatter>().To<LaanQueryFormatter>().InSingletonScope();
         builder.Bind<IQueryParameterEmbedder>().To<QueryParameterEmbedder>().InSingletonScope();
         builder.Bind<IQueryConnection>().To<QueryConnection>();
+        builder.Bind<IFilterIO>().To<FilterIO>().InSingletonScope();
     }
 }
