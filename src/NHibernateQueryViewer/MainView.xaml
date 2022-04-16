@@ -66,8 +66,8 @@
                 <TextBox x:Name="Filter" Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged, Delay=500}" />
                 <Button
                     Grid.Column="1"
-                    Command="{s:Action OpenIncludeExcludeEditor}"
-                    Content="Include/Exclude" />
+                    Command="{s:Action OpenFilterEditor}"
+                    Content="Edit filters" />
             </Grid>
 
             <ListView

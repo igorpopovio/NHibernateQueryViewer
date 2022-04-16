@@ -18,7 +18,7 @@ public class MainViewModel : ViewModel
     private readonly IQueryParameterEmbedder _queryParameterEmbedder;
     private readonly Func<IQueryConnection> _queryConnectionFactory;
     private readonly IWindowManager _windowManager;
-    private readonly InclusionExclusionEditorViewModel _inclusionExclusionEditorViewModel;
+    private readonly FilterEditorViewModel _filterEditorViewModel;
     private IQueryConnection? _queryConnection;
     private string _filter = string.Empty;
 
@@ -27,13 +27,13 @@ public class MainViewModel : ViewModel
         IQueryParameterEmbedder queryParameterEmbedder,
         Func<IQueryConnection> queryConnectionFactory,
         IWindowManager windowManager,
-        InclusionExclusionEditorViewModel inclusionExclusionEditorViewModel)
+        FilterEditorViewModel inclusionExclusionEditorViewModel)
     {
         _queryFormatter = queryFormatter;
         _queryParameterEmbedder = queryParameterEmbedder;
         _queryConnectionFactory = queryConnectionFactory;
         _windowManager = windowManager;
-        _inclusionExclusionEditorViewModel = inclusionExclusionEditorViewModel;
+        _filterEditorViewModel = inclusionExclusionEditorViewModel;
         Queries = new ObservableCollection<QueryModel>();
         FilteredQueries = CollectionViewSource.GetDefaultView(Queries);
         FilteredQueries.Filter = FilterQueries;
@@ -104,9 +104,9 @@ public class MainViewModel : ViewModel
         FocusFilter?.Invoke(this, EventArgs.Empty);
     }
 
-    public void OpenIncludeExcludeEditor()
+    public void OpenFilterEditor()
     {
-        _windowManager.ShowDialog(_inclusionExclusionEditorViewModel);
+        _windowManager.ShowDialog(_filterEditorViewModel);
     }
 
     private bool FilterQueries(object obj)
