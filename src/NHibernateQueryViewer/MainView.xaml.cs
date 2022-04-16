@@ -42,13 +42,13 @@ public partial class MainView
             return;
         }
 
-        if (ViewModel?.SelectedQuery?.DisplayQuery == null)
+        if (ViewModel?.SelectedQuery?.Enhanced == null)
         {
             textEditor.Text = null;
             return;
         }
 
-        using var stream = GenerateStreamFrom(ViewModel.SelectedQuery.DisplayQuery);
+        using var stream = GenerateStreamFrom(ViewModel.SelectedQuery.Enhanced);
         textEditor.Load(stream);
         var syntax = HighlightingManager.Instance.GetDefinition(ViewModel.SelectedQuery.Language);
         textEditor.SyntaxHighlighting = syntax;

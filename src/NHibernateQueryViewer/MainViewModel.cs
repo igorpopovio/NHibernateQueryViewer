@@ -35,7 +35,7 @@ public class MainViewModel : ViewModel
         _queryConnectionFactory = queryConnectionFactory;
         _windowManager = windowManager;
         _filterEditorViewModel = inclusionExclusionEditorViewModel;
-        Queries = new ObservableCollection<QueryModel>();
+        Queries = new ObservableCollection<Query>();
         FilteredQueries = CollectionViewSource.GetDefaultView(Queries);
         FilteredQueries.Filter = FilterQueries;
         ViewOption = ViewOption.Format;
@@ -47,11 +47,11 @@ public class MainViewModel : ViewModel
 
     public event EventHandler? FocusFilter;
 
-    public ObservableCollection<QueryModel> Queries { get; }
+    public ObservableCollection<Query> Queries { get; }
 
     public ICollectionView FilteredQueries { get; }
 
-    public QueryModel? SelectedQuery { get; set; }
+    public Query? SelectedQuery { get; set; }
 
     public string Filter
     {
@@ -117,13 +117,13 @@ public class MainViewModel : ViewModel
             return true;
         }
 
-        if (obj is not QueryModel query)
+        if (obj is not Query query)
         {
             return false;
         }
 
         return
-            query.RawQuery?.ToUpperInvariant().Contains(
+            query.Raw?.ToUpperInvariant().Contains(
                 Filter.ToUpperInvariant(), StringComparison.Ordinal) ?? true;
     }
 
@@ -154,7 +154,7 @@ public class MainViewModel : ViewModel
             return;
         }
 
-        if (SelectedQuery == null || SelectedQuery.RawQuery == null)
+        if (SelectedQuery == null || SelectedQuery.Raw == null)
         {
             return;
         }
@@ -164,14 +164,14 @@ public class MainViewModel : ViewModel
             switch (ViewOption)
             {
                 case ViewOption.Raw:
-                    SelectedQuery.DisplayQuery = SelectedQuery.RawQuery;
+                    SelectedQuery.Enhanced = SelectedQuery.Raw;
                     break;
                 case ViewOption.EmbedParameters:
-                    SelectedQuery.DisplayQuery = _queryParameterEmbedder.Embed(SelectedQuery.RawQuery);
+                    SelectedQuery.Enhanced = _queryParameterEmbedder.Embed(SelectedQuery.Raw);
                     break;
                 case ViewOption.Format:
-                    var query = _queryParameterEmbedder.Embed(SelectedQuery.RawQuery);
-                    SelectedQuery.DisplayQuery = _queryFormatter.Format(query);
+                    var query = _queryParameterEmbedder.Embed(SelectedQuery.Raw);
+                    SelectedQuery.Enhanced = _queryFormatter.Format(query);
                     break;
                 default:
                     throw new InvalidOperationException($"Unrecognized ViewOption: {ViewOption}");
@@ -186,10 +186,10 @@ public class MainViewModel : ViewModel
             message.AppendLine(CultureInfo.InvariantCulture, $"Occured when using the **{ViewOption}** view option.");
             message.AppendLine();
             message.AppendLine("## Raw query");
-            message.AppendLine(SelectedQuery.RawQuery);
+            message.AppendLine(SelectedQuery.Raw);
             message.AppendLine("## Exception");
             message.AppendLine(CultureInfo.InvariantCulture, $"{exception.Message}{Environment.NewLine}{exception.StackTrace}");
-            SelectedQuery.DisplayQuery = message.ToString();
+            SelectedQuery.Enhanced = message.ToString();
             SelectedQuery.Language = "MarkDownWithFontSize";
         }
     }

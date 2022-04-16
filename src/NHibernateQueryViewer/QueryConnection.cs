@@ -32,7 +32,7 @@ public class QueryConnection : IQueryConnection, IDisposable
         _udpClient = udpClient;
     }
 
-    public async Task<QueryModel> ReceiveQueryAsync()
+    public async Task<Query> ReceiveQueryAsync()
     {
         if (_disposed)
         {
@@ -45,7 +45,7 @@ public class QueryConnection : IQueryConnection, IDisposable
             // and implement proper cancellation instead of checking error codes
             var result = await _udpClient.ReceiveAsync();
             var loggingEvent = Encoding.UTF8.GetString(result.Buffer).Trim();
-            return new QueryModel { RawQuery = loggingEvent };
+            return new Query { Raw = loggingEvent };
         }
         catch (SocketException exception)
         {
