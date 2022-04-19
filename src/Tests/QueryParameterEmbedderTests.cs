@@ -7,7 +7,7 @@ using NUnit.Framework;
 using System;
 using System.Text;
 
-public class Tests
+public class QueryParameterEmbedderTests
 {
     private QueryParameterEmbedder _embedder;
     private StringBuilder _rawQuery;

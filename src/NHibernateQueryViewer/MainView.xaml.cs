@@ -24,7 +24,9 @@ public partial class MainView
             return;
         }
 
-        ViewModel.PropertyChanged += LoadQuery;
+        _ = ViewModel.Initialize();
+
+        ViewModel.SelectedQueryUpdated += LoadQuery;
         ViewModel.FocusFilter += ViewModel_FocusFilter;
         Loaded -= MainView_Loaded;
     }
@@ -35,13 +37,8 @@ public partial class MainView
         Filter.SelectAll();
     }
 
-    private void LoadQuery(object? sender, PropertyChangedEventArgs args)
+    private void LoadQuery(object? sender, EventArgs args)
     {
-        if (args.PropertyName != nameof(ViewModel.SelectedQuery) && args.PropertyName != nameof(ViewModel.ViewOption))
-        {
-            return;
-        }
-
         if (ViewModel?.SelectedQuery?.Enhanced == null)
         {
             textEditor.Text = null;

@@ -1,6 +1,7 @@
 ﻿namespace NHibernateQueryViewer;
 
 using NHibernateQueryViewer.Core;
+using NHibernateQueryViewer.Core.Filters;
 using NHibernateQueryViewer.Core.Queries;
 
 using Stylet;
@@ -20,36 +21,38 @@ public class MainViewModel : ViewModel
     private readonly Func<IQueryConnection> _queryConnectionFactory;
     private readonly IWindowManager _windowManager;
     private readonly FilterEditorViewModel _filterEditorViewModel;
+    private readonly IFilterIO _filterIo;
+    private readonly ITextFilter _textFilter;
     private IQueryConnection? _queryConnection;
     private string _filter = string.Empty;
+    private Filter _advancedFilter;
 
     public MainViewModel(
         IQueryFormatter queryFormatter,
         IQueryParameterEmbedder queryParameterEmbedder,
         Func<IQueryConnection> queryConnectionFactory,
         IWindowManager windowManager,
-        FilterEditorViewModel inclusionExclusionEditorViewModel)
+        FilterEditorViewModel filterEditorViewModel,
+        IFilterIO filterIo,
+        ITextFilter textFilter)
     {
         _queryFormatter = queryFormatter;
         _queryParameterEmbedder = queryParameterEmbedder;
         _queryConnectionFactory = queryConnectionFactory;
         _windowManager = windowManager;
-        _filterEditorViewModel = inclusionExclusionEditorViewModel;
-        Queries = new ObservableCollection<Query>();
-        FilteredQueries = CollectionViewSource.GetDefaultView(Queries);
-        FilteredQueries.Filter = FilterQueries;
-        ViewOption = ViewOption.Format;
-        CaptureButtonName = "Capture";
-
-        PropertyChanged += UpdateViewOptionForSelectedQuery;
-        PropertyChanged += HandleConnections;
+        _filterEditorViewModel = filterEditorViewModel;
+        _filterIo = filterIo;
+        _textFilter = textFilter;
+        _advancedFilter = Core.Filters.Filter.Empty;
     }
 
     public event EventHandler? FocusFilter;
 
-    public ObservableCollection<Query> Queries { get; }
+    public event EventHandler? SelectedQueryUpdated;
 
-    public ICollectionView FilteredQueries { get; }
+    public ObservableCollection<Query> Queries { get; } = new ObservableCollection<Query>();
+
+    public ICollectionView FilteredQueries => CollectionViewSource.GetDefaultView(Queries);
 
     public Query? SelectedQuery { get; set; }
 
@@ -70,9 +73,23 @@ public class MainViewModel : ViewModel
 
     public bool IsCapturing { get; set; }
 
-    public string CaptureButtonName { get; set; }
+    public string? CaptureButtonName { get; set; }
 
     public ViewOption ViewOption { get; set; }
+
+    public async Task Initialize()
+    {
+        _advancedFilter = await _filterIo.Load();
+        _filterIo.Saved += OnFilterKeywordsSaved;
+
+        FilteredQueries.Filter = FilterQueries;
+
+        ViewOption = ViewOption.Format;
+        CaptureButtonName = "Capture";
+
+        PropertyChanged += UpdateViewOptionForSelectedQuery;
+        PropertyChanged += HandleConnections;
+    }
 
     public async Task Capture()
     {
@@ -112,19 +129,18 @@ public class MainViewModel : ViewModel
 
     private bool FilterQueries(object obj)
     {
-        if (string.IsNullOrWhiteSpace(Filter))
-        {
-            return true;
-        }
-
         if (obj is not Query query)
         {
             return false;
         }
 
-        return
-            query.Raw?.ToUpperInvariant().Contains(
-                Filter.ToUpperInvariant(), StringComparison.Ordinal) ?? true;
+        return _textFilter.Filter(query.Raw, Filter, _advancedFilter);
+    }
+
+    private void OnFilterKeywordsSaved(object? sender, FilterSavedEventArgs args)
+    {
+        _advancedFilter = args.Filter;
+        FilteredQueries.Refresh();
     }
 
     private void HandleConnections(object? sender, PropertyChangedEventArgs args)
@@ -192,5 +208,7 @@ public class MainViewModel : ViewModel
             SelectedQuery.Enhanced = message.ToString();
             SelectedQuery.Language = "MarkDownWithFontSize";
         }
+
+        SelectedQueryUpdated?.Invoke(this, EventArgs.Empty);
     }
 }

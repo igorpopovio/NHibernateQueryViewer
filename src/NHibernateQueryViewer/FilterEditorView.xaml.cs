@@ -19,6 +19,8 @@ public partial class FilterEditorView
             return;
         }
 
+        _ = ViewModel.Initialize();
+
         ViewModel.CloseView += (s, e) => Close();
     }
 }

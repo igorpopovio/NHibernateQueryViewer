@@ -24,5 +24,6 @@ public class Bootstrapper : Bootstrapper<MainViewModel>
         builder.Bind<IQueryParameterEmbedder>().To<QueryParameterEmbedder>().InSingletonScope();
         builder.Bind<IQueryConnection>().To<QueryConnection>();
         builder.Bind<IFilterIO>().To<FilterIO>().InSingletonScope();
+        builder.Bind<ITextFilter>().To<TextFilter>().InSingletonScope();
     }
 }

@@ -13,7 +13,6 @@ public class FilterEditorViewModel : ViewModel
     public FilterEditorViewModel(IFilterIO filterIo)
     {
         _filterIo = filterIo;
-        _ = Initialize();
     }
 
     public event EventHandler? CloseView;
